@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Pop-A-Bubble</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  max-width:1200px;
+  margin:auto;
+  padding:20px;
+  background:linear-gradient(to bottom,#fff7ff,#e8f7ff);
+  text-align:center;
+  color:#333;
+}
+
+h1,h2,h3{
+  color:#ff55aa;
+}
+
+p{
+  line-height:1.6;
+}
+
+hr{
+  border:none;
+  border-top:2px solid #ff55aa;
+  width:80%;
+  margin:40px auto;
+}
+
+/* Cards */
+.container{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:20px;
+}
+
+.card{
+  background:#ffffff;
+  width:260px;
+  padding:20px;
+  border-radius:20px;
+  box-shadow:0 6px 15px rgba(0,0,0,.2);
+  transition:.3s;
+}
+
+.card:hover{
+  transform:translateY(-8px);
+  box-shadow:0 10px 22px rgba(0,0,0,.3);
+}
+
+.card button{
+  background:linear-gradient(to right,#ff55aa,#ff2277);
+  border:none;
+  color:white;
+  padding:10px 20px;
+  border-radius:12px;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.card button:hover{
+  background:linear-gradient(to right,#ff2277,#cc1155);
+}
+
+/* Table */
+table{
+  width:80%;
+  margin:auto;
+  border-collapse:collapse;
+}
+
+th,td{
+  border:1px solid #ff55aa;
+  padding:10px;
+}
+
+th{
+  background:#ff55aa;
+  color:white;
+}
+
+td{
+  background:#fff0f8;
+}
+
+/* Cart */
+#cart{
+  position:fixed;
+  right:20px;
+  bottom:20px;
+  background:#fff;
+  border:2px solid #ff55aa;
+  border-radius:15px;
+  width:300px;
+  max-height:500px;
+  overflow:auto;
+  box-shadow:0 8px 18px rgba(0,0,0,.25);
+  transform:translateX(110%);
+  transition:.3s;
+  z-index:10;
+  padding:10px;
+  text-align:left;
+}
+
+#cart.open{
+  transform:translateX(0);
+}
+
+#cart button{
+  width:90%;
+  padding:10px;
+  margin:5px 5%;
+  border:none;
+  border-radius:12px;
+  background:#44cc55;
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+}
+
+#cart button:hover{
+  background:#229933;
+}
+
+#cart-toggle{
+  position:fixed;
+  right:20px;
+  bottom:20px;
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  border:none;
+  background:#ff55aa;
+  color:white;
+  font-size:30px;
+  cursor:pointer;
+  box-shadow:0 6px 15px rgba(0,0,0,.35);
+}
+
+ul{
+  list-style:none;
+  padding:0;
+}
+
+li{
+  margin:10px 0;
+}
+
+/* Responsive */
+@media(max-width:900px){
+  .container{
+    flex-direction:column;
+    align-items:center;
+  }
+
+  #cart{
+    width:90%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<h1>🎯 Pop-A-Bubble</h1>
+
+<p style="font-size:18px;">
+Welcome to <strong>Pop-A-Bubble</strong> — the ultimate bubble-popping experience!  
+No blowing, no setup headaches — just endless rows of satisfying bubbles ready to pop!
+</p>
+
+<p style="font-size:17px;">
+Perfect for stress relief, kids’ events, parties, and sensory play.  
+If popping bubbles makes you smile… you’re in the right place.
+</p>
+
+<hr>
+
+<h2>🎈 About Pop-A-Bubble</h2>
+<p>
+Pop-A-Bubble brings giant reusable bubble sheets, pop stations, and bubble games to your party or event.
+Our setup lets guests pop bubbles nonstop for:
+• Stress relief  
+• Sensory fun  
+• Group games  
+• Photo ops
+</p>
+
+<hr>
+
+<h2>✅ How It Works</h2>
+<ul>
+  <li>1️⃣ Choose your bubble popping packs below</li>
+  <li>2️⃣ Add them to your cart</li>
+  <li>3️⃣ Check out and reserve your date</li>
+  <li>4️⃣ Pop bubbles and have fun!</li>
+</ul>
+
+<hr>
+
+<h2>🛡 Safety Rules</h2>
+<ul>
+  <li>✅ Do not climb or pull on bubble sheets</li>
+  <li>✅ Use hands only — no sharp objects</li>
+  <li>✅ Adult supervision required for younger kids</li>
+  <li>✅ Follow all provided setup instructions</li>
+</ul>
+
+<hr>
+
+<h2>💲 Pricing</h2>
+
+<table>
+<tr>
+  <th>Bubble Experience</th>
+  <th>1 Hour</th>
+  <th>2 Hours</th>
+</tr>
+<tr>
+  <td>Mini Pop Station</td>
+  <td>$20</td>
+  <td>$35</td>
+</tr>
+<tr>
+  <td>Standard Pop Wall</td>
+  <td>$35</td>
+  <td>$60</td>
+</tr>
+<tr>
+  <td>Party Mega Pack</td>
+  <td>$70</td>
+  <td>$120</td>
+</tr>
+</table>
+
+<hr>
+
+<h2>⭐ Perfect For</h2>
+<ul>
+  <li>🎉 Birthday parties</li>
+  <li>🏫 School field days</li>
+  <li>😌 Stress-relief events</li>
+  <li>🎪 Fairs & festivals</li>
+  <li>🧠 Sensory classrooms</li>
+  <li>📸 Fun photo stations</li>
+</ul>
+
+<hr>
+
+<h2>🛒 Book Your Bubble Fun</h2>
+
+<div class="container">
+
+<div class="card">
+<h3>Mini Pop Station</h3>
+<p>$20 per hour</p>
+<input type="number" id="miniQty" value="1" min="1" style="width:50px;">
+<br><br>
+<button onclick="addToCart('Mini Pop Station',20,'miniQty')">Add</button>
+</div>
+
+<div class="card">
+<h3>Standard Pop Wall</h3>
+<p>$35 per hour</p>
+<input type="number" id="standardQty" value="1" min="1" style="width:50px;">
+<br><br>
+<button onclick="addToCart('Standard Pop Wall',35,'standardQty')">Add</button>
+</div>
+
+<div class="card">
+<h3>Mega Party Pack</h3>
+<p>$70 per hour</p>
+<input type="number" id="megaQty" value="1" min="1" style="width:50px;">
+<br><br>
+<button onclick="addToCart('Mega Party Pack',70,'megaQty')">Add</button>
+</div>
+
+</div>
+
+<hr>
+
+<h2>💬 Reviews</h2>
+<p><em>"Everyone loved the popping walls — even the adults!"</em> — Jamie P.</p>
+<p><em>"Best stress-relief station at our fair."</em> — Fairgrounds Staff</p>
+<p><em>"My kids popped bubbles for two hours straight!"</em> — Danielle T.</p>
+
+<hr>
+
+<h2>❓ FAQ</h2>
+
+<p><strong>Q:</strong> Is it safe for kids?<br>
+<strong>A:</strong> Yes! No tools required — popping is done by hand only.</p>
+
+<p><strong>Q:</strong> Can we book multiple stations?<br>
+<strong>A:</strong> Absolutely — just increase quantities in your cart.</p>
+
+<p><strong>Q:</strong> Is setup included?<br>
+<strong>A:</strong> Yes — we deliver and set up all pop stations.</p>
+
+<hr>
+
+<h2>📞 Contact</h2>
+
+<p>
+Email: <strong>popabubble@gmail.com</strong><br>
+Phone: <strong>(614) 961-2377</strong>
+</p>
+
+<!-- CART -->
+<div id="cart">
+<h3>Your Cart</h3>
+<div id="cart-items">Your cart is empty.</div>
+<h4 id="total">Total: $0</h4>
+<button onclick="checkout()">Checkout</button>
+<button onclick="toggleCart()">Close</button>
+</div>
+
+<button id="cart-toggle" onclick="toggleCart()">🛒</button>
+
+<script>
+let cartTotal = 0;
+
+function addToCart(name, price, qtyId){
+  let qty = Number(document.getElementById(qtyId).value);
+  let cost = price * qty;
+  cartTotal += cost;
+
+  let items = document.getElementById("cart-items");
+  if(items.innerHTML === "Your cart is empty."){
+    items.innerHTML = "";
+  }
+
+  let p = document.createElement("p");
+  p.textContent = `✅ ${qty} x ${name} — $${cost}`;
+  items.appendChild(p);
+
+  document.getElementById("total").textContent = "Total: $" + cartTotal;
+
+  document.getElementById("cart").classList.add("open");
+}
+
+function checkout(){
+  if(cartTotal === 0){
+    alert("Your cart is empty!");
+    return;
+  }
+
+  alert("🎉 Booking complete! Thanks for choosing Pop-A-Bubble.");
+
+  document.getElementById("cart-items").innerHTML = "Your cart is empty.";
+  cartTotal = 0;
+  document.getElementById("total").textContent = "Total: $0";
+}
+
+function toggleCart(){
+  document.getElementById("cart").classList.toggle("open");
+}
+</script>
+
+</body>
+</html>
