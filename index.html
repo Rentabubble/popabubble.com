@@ -1,366 +1,616 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Pop-A-Bubble</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<style>
-body{
-  font-family: Arial, sans-serif;
-  max-width:1200px;
-  margin:auto;
-  padding:20px;
-  background:linear-gradient(to bottom,#fff7ff,#e8f7ff);
-  text-align:center;
-  color:#333;
-}
-
-h1,h2,h3{
-  color:#ff55aa;
-}
-
-p{
-  line-height:1.6;
-}
-
-hr{
-  border:none;
-  border-top:2px solid #ff55aa;
-  width:80%;
-  margin:40px auto;
-}
-
-/* Cards */
-.container{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:20px;
-}
-
-.card{
-  background:#ffffff;
-  width:260px;
-  padding:20px;
-  border-radius:20px;
-  box-shadow:0 6px 15px rgba(0,0,0,.2);
-  transition:.3s;
-}
-
-.card:hover{
-  transform:translateY(-8px);
-  box-shadow:0 10px 22px rgba(0,0,0,.3);
-}
-
-.card button{
-  background:linear-gradient(to right,#ff55aa,#ff2277);
-  border:none;
-  color:white;
-  padding:10px 20px;
-  border-radius:12px;
-  font-size:16px;
-  cursor:pointer;
-}
-
-.card button:hover{
-  background:linear-gradient(to right,#ff2277,#cc1155);
-}
-
-/* Table */
-table{
-  width:80%;
-  margin:auto;
-  border-collapse:collapse;
-}
-
-th,td{
-  border:1px solid #ff55aa;
-  padding:10px;
-}
-
-th{
-  background:#ff55aa;
-  color:white;
-}
-
-td{
-  background:#fff0f8;
-}
-
-/* Cart */
-#cart{
-  position:fixed;
-  right:20px;
-  bottom:20px;
-  background:#fff;
-  border:2px solid #ff55aa;
-  border-radius:15px;
-  width:300px;
-  max-height:500px;
-  overflow:auto;
-  box-shadow:0 8px 18px rgba(0,0,0,.25);
-  transform:translateX(110%);
-  transition:.3s;
-  z-index:10;
-  padding:10px;
-  text-align:left;
-}
-
-#cart.open{
-  transform:translateX(0);
-}
-
-#cart button{
-  width:90%;
-  padding:10px;
-  margin:5px 5%;
-  border:none;
-  border-radius:12px;
-  background:#44cc55;
-  color:white;
-  font-size:16px;
-  cursor:pointer;
-}
-
-#cart button:hover{
-  background:#229933;
-}
-
-#cart-toggle{
-  position:fixed;
-  right:20px;
-  bottom:20px;
-  width:60px;
-  height:60px;
-  border-radius:50%;
-  border:none;
-  background:#ff55aa;
-  color:white;
-  font-size:30px;
-  cursor:pointer;
-  box-shadow:0 6px 15px rgba(0,0,0,.35);
-}
-
-ul{
-  list-style:none;
-  padding:0;
-}
-
-li{
-  margin:10px 0;
-}
-
-/* Responsive */
-@media(max-width:900px){
-  .container{
-    flex-direction:column;
-    align-items:center;
-  }
-
-  #cart{
-    width:90%;
-  }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FNAE: Five Nights at Epstein's</title>
+    <style>
+        body {
+            background-color: black;
+            color: lime;
+            font-family: monospace;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px red;
+        }
+        #clock {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2em;
+            color: lime;
+            text-shadow: 0 0 10px lime;
+            z-index: 100;
+        }
+        #power-bar {
+            position: fixed;
+            top: 60px;
+            right: 10px;
+            width: 200px;
+            height: 20px;
+            background: #111;
+            border: 2px solid lime;
+            z-index: 100;
+        }
+        #power-fill {
+            height: 100%;
+            background: lime;
+            width: 100%;
+            transition: width 0.5s;
+        }
+        #power-text {
+            color: lime;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        .low-power #power-fill { background: red; }
+        .low-power #power-text { color: red; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.3; } }
+        #game-area {
+            position: relative;
+            width: 90%;
+            max-width: 900px;
+            height: 500px;
+            margin: 0 auto;
+            border: 5px solid lime;
+            overflow: hidden;
+            background-color: #000;
+            box-shadow: 0 0 20px red;
+        }
+        #base-view, #monitor {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        #base-view img, #camera-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(100%) sepia(0.1) brightness(0.7) contrast(1.3);
+            transition: filter 0.3s;
+        }
+        #base-view { display: block; }
+        #monitor { display: none; }
+        #doors-btn {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #001100;
+            color: lime;
+            border: 3px solid lime;
+            padding: 15px 40px;
+            font-size: 1.8em;
+            font-family: monospace;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 20;
+            display: block; /* always visible */
+        }
+        #doors-btn:hover:not(.disabled) {
+            background: #003300;
+            box-shadow: 0 0 20px lime;
+        }
+        #doors-btn.disabled { opacity: 0.5; cursor: not-allowed; }
+        #toggle-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #001100;
+            color: lime;
+            border: 3px solid lime;
+            padding: 15px 30px;
+            font-size: 1.5em;
+            font-family: monospace;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 20;
+        }
+        #toggle-btn:hover:not(.disabled) {
+            background: #003300;
+            box-shadow: 0 0 20px lime;
+        }
+        #toggle-btn.disabled { opacity: 0.5; cursor: not-allowed; }
+        .jumpscare #camera-image, .chaos #camera-image {
+            filter: grayscale(0%) brightness(3) contrast(3) saturate(3) !important;
+            clip-path: inset(15% 20% 20% 20%) !important;
+            object-position: center !important;
+            transform: scale(1.5) !important;
+            z-index: 50;
+        }
+        #static-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: url('https://img.freepik.com/free-vector/white-black-grainy-noise-stipple-texture-background_1017-51837.jpg') repeat;
+            opacity: 0.25;
+            pointer-events: none;
+            animation: static 0.05s infinite;
+            z-index: 10;
+        }
+        @keyframes static {
+            0% { background-position: 0 0; }
+            100% { background-position: 100px 100px; }
+        }
+        @keyframes shake-mild {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(-5px, -5px); }
+            50% { transform: translate(5px, 5px); }
+            75% { transform: translate(-3px, 3px); }
+        }
+        @keyframes shake-intense {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            10% { transform: translate(-10px, -10px) rotate(-2deg); }
+            20% { transform: translate(10px, 10px) rotate(2deg); }
+            30% { transform: translate(-8px, 8px) rotate(-1deg); }
+            40% { transform: translate(8px, -8px) rotate(1deg); }
+            50% { transform: translate(-12px, 12px) rotate(-3deg); }
+            60% { transform: translate(12px, -12px) rotate(3deg); }
+            70% { transform: translate(-5px, 5px) rotate(-1.5deg); }
+            80% { transform: translate(5px, -5px) rotate(1.5deg); }
+            90% { transform: translate(-10px, 10px) rotate(-2.5deg); }
+        }
+        @keyframes flash {
+            0%, 50% { background: black; }
+            25%, 75% { background: red; }
+        }
+        .jumpscare #game-area {
+            animation: shake-mild 0.3s infinite, flash 0.15s 4;
+            border-color: red !important;
+            box-shadow: 0 0 50px red !important;
+        }
+        .chaos #game-area {
+            animation: shake-intense 0.1s infinite, flash 0.05s infinite;
+            border-color: #ff0000 !important;
+            box-shadow: 0 0 100px #ff0000 !important;
+        }
+        #urgent-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,0,0,0.7);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 30;
+            color: white;
+            font-size: 3em;
+            text-shadow: 0 0 10px black;
+        }
+        #urgent-doors {
+            background: #ff0000;
+            color: white;
+            border: 5px solid yellow;
+            padding: 20px 50px;
+            font-size: 2em;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+        #timer-countdown {
+            font-size: 4em;
+            color: yellow;
+            text-shadow: 0 0 20px red;
+        }
+        #camera-label, #base-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 1.8em;
+            background: rgba(0,0,0,0.8);
+            padding: 5px 10px;
+            border-radius: 5px;
+            text-shadow: 0 0 5px lime;
+            z-index: 15;
+        }
+        #buttons {
+            margin-top: 140px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        button {
+            background: #001100;
+            color: lime;
+            border: 2px solid lime;
+            padding: 12px 24px;
+            margin: 8px;
+            cursor: pointer;
+            font-family: monospace;
+            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #003300;
+            box-shadow: 0 0 15px lime;
+        }
+        #status {
+            margin-top: 10px;
+            font-size: 1.2em;
+        }
+        #game-over, #game-win {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            color: red;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            font-size: 3em;
+        }
+        #game-win { color: lime; }
+        #restart-btn {
+            margin-top: 30px;
+            padding: 20px 50px;
+            font-size: 1.5em;
+            background: lime;
+            color: black;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+    </style>
 </head>
-
 <body>
-
-<h1>🎯 Pop-A-Bubble</h1>
-
-<p style="font-size:18px;">
-Welcome to <strong>Pop-A-Bubble</strong> — the ultimate bubble-popping experience!  
-No blowing, no setup headaches — just endless rows of satisfying bubbles ready to pop!
-</p>
-
-<p style="font-size:17px;">
-Perfect for stress relief, kids’ events, parties, and sensory play.  
-If popping bubbles makes you smile… you’re in the right place.
-</p>
-
-<hr>
-
-<h2>🎈 About Pop-A-Bubble</h2>
-<p>
-Pop-A-Bubble brings giant reusable bubble sheets, pop stations, and bubble games to your party or event.
-Our setup lets guests pop bubbles nonstop for:
-• Stress relief  
-• Sensory fun  
-• Group games  
-• Photo ops
-</p>
-
-<hr>
-
-<h2>✅ How It Works</h2>
-<ul>
-  <li>1️⃣ Choose your bubble popping packs below</li>
-  <li>2️⃣ Add them to your cart</li>
-  <li>3️⃣ Check out and reserve your date</li>
-  <li>4️⃣ Pop bubbles and have fun!</li>
-</ul>
-
-<hr>
-
-<h2>🛡 Safety Rules</h2>
-<ul>
-  <li>✅ Do not climb or pull on bubble sheets</li>
-  <li>✅ Use hands only — no sharp objects</li>
-  <li>✅ Adult supervision required for younger kids</li>
-  <li>✅ Follow all provided setup instructions</li>
-</ul>
-
-<hr>
-
-<h2>💲 Pricing</h2>
-
-<table>
-<tr>
-  <th>Bubble Experience</th>
-  <th>1 Hour</th>
-  <th>2 Hours</th>
-</tr>
-<tr>
-  <td>Mini Pop Station</td>
-  <td>$20</td>
-  <td>$35</td>
-</tr>
-<tr>
-  <td>Standard Pop Wall</td>
-  <td>$35</td>
-  <td>$60</td>
-</tr>
-<tr>
-  <td>Party Mega Pack</td>
-  <td>$70</td>
-  <td>$120</td>
-</tr>
-</table>
-
-<hr>
-
-<h2>⭐ Perfect For</h2>
-<ul>
-  <li>🎉 Birthday parties</li>
-  <li>🏫 School field days</li>
-  <li>😌 Stress-relief events</li>
-  <li>🎪 Fairs & festivals</li>
-  <li>🧠 Sensory classrooms</li>
-  <li>📸 Fun photo stations</li>
-</ul>
-
-<hr>
-
-<h2>🛒 Book Your Bubble Fun</h2>
-
-<div class="container">
-
-<div class="card">
-<h3>Mini Pop Station</h3>
-<p>$20 per hour</p>
-<input type="number" id="miniQty" value="1" min="1" style="width:50px;">
-<br><br>
-<button onclick="addToCart('Mini Pop Station',20,'miniQty')">Add</button>
-</div>
-
-<div class="card">
-<h3>Standard Pop Wall</h3>
-<p>$35 per hour</p>
-<input type="number" id="standardQty" value="1" min="1" style="width:50px;">
-<br><br>
-<button onclick="addToCart('Standard Pop Wall',35,'standardQty')">Add</button>
-</div>
-
-<div class="card">
-<h3>Mega Party Pack</h3>
-<p>$70 per hour</p>
-<input type="number" id="megaQty" value="1" min="1" style="width:50px;">
-<br><br>
-<button onclick="addToCart('Mega Party Pack',70,'megaQty')">Add</button>
-</div>
-
-</div>
-
-<hr>
-
-<h2>💬 Reviews</h2>
-<p><em>"Everyone loved the popping walls — even the adults!"</em> — Jamie P.</p>
-<p><em>"Best stress-relief station at our fair."</em> — Fairgrounds Staff</p>
-<p><em>"My kids popped bubbles for two hours straight!"</em> — Danielle T.</p>
-
-<hr>
-
-<h2>❓ FAQ</h2>
-
-<p><strong>Q:</strong> Is it safe for kids?<br>
-<strong>A:</strong> Yes! No tools required — popping is done by hand only.</p>
-
-<p><strong>Q:</strong> Can we book multiple stations?<br>
-<strong>A:</strong> Absolutely — just increase quantities in your cart.</p>
-
-<p><strong>Q:</strong> Is setup included?<br>
-<strong>A:</strong> Yes — we deliver and set up all pop stations.</p>
-
-<hr>
-
-<h2>📞 Contact</h2>
-
-<p>
-Email: <strong>popabubble@gmail.com</strong><br>
-Phone: <strong>(614) 961-2377</strong>
-</p>
-
-<!-- CART -->
-<div id="cart">
-<h3>Your Cart</h3>
-<div id="cart-items">Your cart is empty.</div>
-<h4 id="total">Total: $0</h4>
-<button onclick="checkout()">Checkout</button>
-<button onclick="toggleCart()">Close</button>
-</div>
-
-<button id="cart-toggle" onclick="toggleCart()">🛒</button>
-
-<script>
-let cartTotal = 0;
-
-function addToCart(name, price, qtyId){
-  let qty = Number(document.getElementById(qtyId).value);
-  let cost = price * qty;
-  cartTotal += cost;
-
-  let items = document.getElementById("cart-items");
-  if(items.innerHTML === "Your cart is empty."){
-    items.innerHTML = "";
-  }
-
-  let p = document.createElement("p");
-  p.textContent = `✅ ${qty} x ${name} — $${cost}`;
-  items.appendChild(p);
-
-  document.getElementById("total").textContent = "Total: $" + cartTotal;
-
-  document.getElementById("cart").classList.add("open");
-}
-
-function checkout(){
-  if(cartTotal === 0){
-    alert("Your cart is empty!");
-    return;
-  }
-
-  alert("🎉 Booking complete! Thanks for choosing Pop-A-Bubble.");
-
-  document.getElementById("cart-items").innerHTML = "Your cart is empty.";
-  cartTotal = 0;
-  document.getElementById("total").textContent = "Total: $0";
-}
-
-function toggleCart(){
-  document.getElementById("cart").classList.toggle("open");
-}
-</script>
-
+    <h1>FNAE: Five Nights at Epstein's - Night 1</h1>
+    <div id="clock">12:00 AM</div>
+    <div id="power-bar">
+        <div id="power-fill"></div>
+    </div>
+    <div id="power-text">POWER: 100%</div>
+    <div id="game-area">
+        <div id="base-view">
+            <img id="base-image" src="https://upload.wikimedia.org/wikipedia/commons/5/58/EFTA00002940-Temple_-_Blue-and-white_striped_building_with_a_red-and-white_labyrinth_in_front_set_against_a_tropical_backdrop_of_palm_trees_and_the_ocean_under_a_bright_sky.jpg" alt="Temple Exterior">
+            <div id="base-label">BASE: Temple Overlook - Doors Open</div>
+            <button id="doors-btn">CLOSE DOORS</button>
+        </div>
+        <div id="monitor">
+            <img id="camera-image" src="" alt="CCTV Feed">
+            <div id="static-overlay"></div>
+            <div id="camera-label">CAM Loading...</div>
+        </div>
+        <button id="toggle-btn">OPEN CAMERAS</button>
+        <div id="urgent-overlay">
+            <div>EPSTEIN AT THE DOOR!</div>
+            <div>CLOSE DOORS NOW!</div>
+            <div id="timer-countdown">6</div>
+            <button id="urgent-doors">CLOSE DOORS!</button>
+        </div>
+    </div>
+    <div id="buttons"></div>
+    <div id="status">Doors Open - Temple Secure</div>
+    <div id="game-over">
+        <div>GAME OVER</div>
+        <div>EPSTEIN GOT YOU!</div>
+        <button id="restart-btn">RESTART NIGHT</button>
+    </div>
+    <div id="game-win" style="color: lime;">
+        <div>NIGHT 1 COMPLETE!</div>
+        <div>YOU SURVIVED!</div>
+        <button id="restart-btn">NEXT NIGHT</button>
+    </div>
+    <script>
+        const cameras = [
+            { name: 'CAM01 - Pool Area', url: 'https://ichef.bbci.co.uk/images/ic/1024xn/p0mlfd2z.jpg' },
+            { name: 'CAM02 - Courtyard', url: 'https://images.axios.com/oxDRBO-_3qoSiF03cVItwIt1I5U=/12x0:2714x1520/1920x1080/2025/12/03/1764780535196.png' },
+            { name: 'CAM03 - Bedroom', url: 'https://d3i6fh83elv35t.cloudfront.net/static/2025/12/IMG_5201S-1024x682.jpg' },
+            { name: 'CAM04 - Bathroom', url: 'https://d3i6fh83elv35t.cloudfront.net/static/2025/12/IMG_5254S-1024x682.jpg' },
+            { name: 'CAM05 - Hallway/Office', url: 'https://hyperallergic.com/content/images/2025/12/epsteinphotos1.jpg' },
+            { name: 'CAM06 - Dental Room', url: 'https://s.abcnews.com/images/US/epstein-house-2-rt-jef-251203_1764792198354_hpMain_2_16x9_1600.jpg' }
+        ];
+        const jumpscares = [
+            'https://ichef.bbci.co.uk/ace/standard/976/cpsprodpb/14361/production/_107858728_49c1502b-76d9-4964-a8f0-e7662db8efcb.jpg',
+            'https://static01.nyt.com/images/2019/10/31/multimedia/31EPSTEIN-autopsy-print/30EPSTEIN-autopsy-videoSixteenByNineJumbo1600.jpg',
+            'https://s.abcnews.com/images/Politics/jeffrey-epstein-rt-gmh-230602_1685726052800_hpMain_2_16x9_1600.jpg',
+            'https://media.cnn.com/api/v1/images/stellar/prod/211124001738-jeffrey-epstein-sex-offender-mugshot-file-2013.jpg',
+            'https://ichef.bbci.co.uk/ace/standard/976/cpsprodpb/13A0A/production/_109749308_epstein.jpg'
+        ];
+        // Elements
+        const baseView = document.getElementById('base-view');
+        const monitor = document.getElementById('monitor');
+        const toggleBtn = document.getElementById('toggle-btn');
+        const doorsBtn = document.getElementById('doors-btn');
+        const buttonsDiv = document.getElementById('buttons');
+        const cameraImage = document.getElementById('camera-image');
+        const cameraLabel = document.getElementById('camera-label');
+        const baseLabel = document.getElementById('base-label');
+        const status = document.getElementById('status');
+        const powerFill = document.getElementById('power-fill');
+        const powerText = document.getElementById('power-text');
+        const gameOver = document.getElementById('game-over');
+        const gameWin = document.getElementById('game-win');
+        const restartBtn = document.getElementById('restart-btn');
+        const gameArea = document.getElementById('game-area');
+        const urgentOverlay = document.getElementById('urgent-overlay');
+        const urgentDoors = document.getElementById('urgent-doors');
+        const timerCountdown = document.getElementById('timer-countdown');
+        const clockEl = document.getElementById('clock');
+        const bodyEl = document.body;
+        // Game state
+        let isCamerasOpen = false;
+        let doorsClosed = false;
+        let canOpenDoors = true;
+        let currentCam = 0;
+        let power = 100;
+        let powerDrainInterval;
+        let jumpscareTimer;
+        let doorCloseTime;
+        let isGameOver = false;
+        let nightStartTime;
+        let clockInterval;
+        let doorTimerId;
+        let currentNight = 1;
+        // Timer for staying too long without cameras
+        let noCamTimer = null;
+        const NO_CAM_DEATH_DELAY = 20000; // 20 seconds
+        // Create camera buttons
+        cameras.forEach((cam, index) => {
+            const btn = document.createElement('button');
+            btn.textContent = cam.name;
+            btn.onclick = () => switchCam(index);
+            buttonsDiv.appendChild(btn);
+        });
+        function initNight() {
+            power = 100;
+            isCamerasOpen = false;
+            doorsClosed = false;
+            canOpenDoors = true;
+            currentCam = 0;
+            nightStartTime = Date.now();
+            updatePower();
+            bodyEl.classList.remove('low-power', 'chaos');
+            gameArea.classList.remove('jumpscare', 'chaos');
+            gameOver.style.display = 'none';
+            gameWin.style.display = 'none';
+            closeCameras();
+            clearInterval(clockInterval);
+            clearInterval(powerDrainInterval);
+            clearTimeout(jumpscareTimer);
+            clearTimeout(doorTimerId);
+            clearTimeout(noCamTimer);
+            clockInterval = setInterval(updateClock, 1000);
+            updateClock();
+            document.querySelector('h1').textContent = `FNAE: Five Nights at Epstein's - Night ${currentNight}`;
+            doorsBtn.textContent = 'CLOSE DOORS';
+            doorsBtn.classList.remove('disabled');
+            toggleBtn.classList.remove('disabled');
+            urgentOverlay.style.display = 'none';
+            status.textContent = 'Doors Open - Temple Secure';
+            baseLabel.textContent = 'BASE: Temple Overlook - Doors Open';
+            isGameOver = false;
+        }
+        function updatePower() {
+            powerFill.style.width = Math.max(power, 0) + '%';
+            powerText.textContent = `POWER: ${Math.floor(power)}%`;
+            if (power <= 20) bodyEl.classList.add('low-power');
+            else bodyEl.classList.remove('low-power');
+            if (power <= 0) gameOverFunc();
+        }
+        function drainPower() {
+            let drain = 0;
+            if (isCamerasOpen) drain += 0.5; // cameras on → drain
+            if (doorsClosed) drain += 1.0; // doors closed → drain (always, even when cameras are off)
+            power -= drain;
+            updatePower();
+        }
+        function startDrain() {
+            powerDrainInterval = setInterval(drainPower, 1000);
+        }
+        function updateClock() {
+            const elapsedSec = (Date.now() - nightStartTime) / 1000;
+            const secondsPerHour = 44;
+            const inGameHours = Math.floor(elapsedSec / secondsPerHour);
+            const secondsIntoHour = elapsedSec % secondsPerHour;
+            const inGameMins = Math.floor((secondsIntoHour / secondsPerHour) * 60);
+            const hour = inGameHours >= 6 ? 6 : (inGameHours === 0 ? 12 : inGameHours);
+            clockEl.textContent = `${hour}:${inGameMins.toString().padStart(2, '0')} AM`;
+            if (inGameHours >= 6) winNight();
+        }
+        function switchCam(index) {
+            if (isGameOver || doorsClosed) return;
+            currentCam = index;
+            cameraImage.src = cameras[index].url;
+            cameraLabel.textContent = cameras[index].name;
+            clearTimeout(jumpscareTimer);
+            scheduleJumpscare();
+        }
+        function scheduleJumpscare() {
+            if (!isCamerasOpen || doorsClosed || isGameOver) return;
+            const delay = 8000 + Math.random() * 25000;
+            jumpscareTimer = setTimeout(triggerJumpscare, delay);
+        }
+        function triggerJumpscare() {
+            if (!isCamerasOpen || doorsClosed || isGameOver) return;
+            playScreech();
+            const randomScare = jumpscares[Math.floor(Math.random() * jumpscares.length)];
+            cameraImage.src = randomScare;
+            cameraLabel.textContent = '!!! EPSTEIN !!!';
+            gameArea.classList.add('jumpscare');
+            urgentOverlay.style.display = 'flex';
+            startJumpscareTimer();
+        }
+        let jumpscareCountdown;
+        function startJumpscareTimer() {
+            let timeLeft = 6;
+            timerCountdown.textContent = timeLeft;
+            jumpscareCountdown = setInterval(() => {
+                timeLeft--;
+                timerCountdown.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(jumpscareCountdown);
+                    failJumpscare();
+                }
+            }, 1000);
+        }
+        function successJumpscare() {
+            clearInterval(jumpscareCountdown);
+            urgentOverlay.style.display = 'none';
+            gameArea.classList.remove('jumpscare');
+            playBang();
+            closeDoors();
+            switchCam(currentCam);
+            scheduleJumpscare();
+        }
+        function failJumpscare() {
+            urgentOverlay.style.display = 'none';
+            chaosMode();
+        }
+        function chaosMode() {
+            gameArea.classList.add('chaos');
+            bodyEl.classList.add('chaos');
+            playBang(true);
+            let flashCount = 0;
+            const chaosInterval = setInterval(() => {
+                cameraImage.src = jumpscares[Math.floor(Math.random() * jumpscares.length)];
+                playScreech();
+                flashCount++;
+                if (flashCount >= 20) {
+                    clearInterval(chaosInterval);
+                    gameOverFunc();
+                }
+            }, 150);
+        }
+        function closeDoors() {
+            doorsClosed = true;
+            canOpenDoors = false;
+            doorsBtn.textContent = 'OPEN DOORS';
+            doorsBtn.classList.add('disabled');
+            baseLabel.textContent = 'BASE: Temple Overlook - Doors Closed';
+            status.textContent = 'Doors Closed - Extra Power Drain';
+            doorCloseTime = Date.now();
+            doorTimerId = setTimeout(() => {
+                canOpenDoors = true;
+                doorsBtn.classList.remove('disabled');
+            }, 10000);
+        }
+        function openDoors() {
+            if (!canOpenDoors) return;
+            doorsClosed = false;
+            doorsBtn.textContent = 'CLOSE DOORS';
+            baseLabel.textContent = 'BASE: Temple Overlook - Doors Open';
+            status.textContent = isCamerasOpen ? 'Cameras Open - Monitor...' : 'Doors Open - Temple Secure';
+        }
+        function playScreech(volume = 0.3, freqStart = 800, freqEnd = 2000) {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.frequency.setValueAtTime(freqStart, audioCtx.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(freqEnd, audioCtx.currentTime + 0.5);
+            gainNode.gain.setValueAtTime(volume, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+            oscillator.start(audioCtx.currentTime);
+            oscillator.stop(audioCtx.currentTime + 0.5);
+        }
+        function playBang(loud = false) {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscLow = audioCtx.createOscillator();
+            const gainLow = audioCtx.createGain();
+            oscLow.connect(gainLow);
+            gainLow.connect(audioCtx.destination);
+            oscLow.frequency.value = 50;
+            gainLow.gain.setValueAtTime(loud ? 0.5 : 0.2, audioCtx.currentTime);
+            gainLow.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+            oscLow.start(audioCtx.currentTime);
+            oscLow.stop(audioCtx.currentTime + 0.3);
+            setTimeout(() => playScreech(loud ? 0.4 : 0.2, 100, 3000), 100);
+        }
+        function closeCameras() {
+            isCamerasOpen = false;
+            baseView.style.display = 'block';
+            baseLabel.style.display = 'block';
+            monitor.style.display = 'none';
+            toggleBtn.textContent = 'OPEN CAMERAS';
+            buttonsDiv.style.display = 'none';
+            status.textContent = doorsClosed ? 'Doors Closed - Extra Power Drain' : 'Doors Open - Temple Secure';
+            toggleBtn.classList.remove('disabled');
+            stopDrain();
+            clearTimeout(jumpscareTimer);
+            // Start the "no cameras" death timer
+            clearTimeout(noCamTimer);
+            noCamTimer = setTimeout(() => {
+                if (!isCamerasOpen && !isGameOver) {
+                    chaosMode();
+                    gameOverFunc();
+                }
+            }, NO_CAM_DEATH_DELAY);
+        }
+        function openCameras() {
+            if (power <= 0 || isGameOver) return;
+            isCamerasOpen = true;
+            baseView.style.display = 'none';
+            baseLabel.style.display = 'none';
+            monitor.style.display = 'block';
+            toggleBtn.textContent = 'CLOSE CAMERAS';
+            buttonsDiv.style.display = 'flex';
+            status.textContent = doorsClosed ? 'Doors Closed - Cams On' : 'Cameras Open - Monitor...';
+            switchCam(currentCam);
+            startDrain();
+            if (!doorsClosed) scheduleJumpscare();
+            // Reset no-camera timer
+            clearTimeout(noCamTimer);
+        }
+        toggleBtn.onclick = () => {
+            if (isGameOver) return;
+            if (isCamerasOpen) {
+                closeCameras();
+            } else {
+                openCameras();
+            }
+        };
+        doorsBtn.onclick = () => {
+            if (isGameOver) return;
+            if (doorsClosed) {
+                openDoors();
+            } else {
+                closeDoors();
+            }
+        };
+        urgentDoors.onclick = successJumpscare;
+        function gameOverFunc() {
+            isGameOver = true;
+            playBang(true);
+            chaosMode();
+            toggleBtn.classList.add('disabled');
+            doorsBtn.classList.add('disabled');
+            stopDrain();
+            clearTimeout(noCamTimer);
+            setTimeout(() => {
+                gameOver.style.display = 'flex';
+            }, 2000);
+        }
+        function winNight() {
+            isGameOver = true;
+            stopDrain();
+            clearTimeout(jumpscareTimer);
+            clearTimeout(noCamTimer);
+            gameWin.style.display = 'flex';
+            currentNight++;
+        }
+        restartBtn.onclick = () => {
+            initNight();
+        };
+        // Init
+        initNight();
+    </script>
 </body>
 </html>
