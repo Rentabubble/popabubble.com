@@ -1,791 +1,421 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>FNAE: Five Nights at Epstein's</title>
-
     <style>
-
-        body {
-
-            background-color: black;
-
-            color: lime;
-
-            font-family: monospace;
-
-            text-align: center;
-
-            margin: 0;
-
-            padding: 20px;
-
-            overflow: hidden;
-
-            transition: all 0.3s;
-
-        }
-
+        body { background: black; color: lime; font-family: monospace; text-align: center; margin: 0; padding: 20px; overflow: hidden; transition: all 0.3s; }
         h1 { font-size: 2.2em; margin-bottom: 15px; text-shadow: 0 0 10px red; }
-
         #clock { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); font-size: 2em; color: lime; text-shadow: 0 0 10px lime; z-index: 100; }
-
         #power-bar { position: fixed; top: 60px; right: 10px; width: 200px; height: 20px; background: #111; border: 2px solid lime; z-index: 100; }
-
         #power-fill { height: 100%; background: lime; width: 100%; transition: width 0.5s; }
-
         #power-text { color: lime; font-size: 0.9em; margin-top: 5px; }
-
         .low-power #power-fill { background: red; }
-
         .low-power #power-text { color: red; animation: blink 1s infinite; }
-
         @keyframes blink { 50% { opacity: 0.3; } }
-
         #game-area { position: relative; width: 90%; max-width: 900px; height: 500px; margin: 0 auto; border: 5px solid lime; overflow: hidden; background: #000; box-shadow: 0 0 20px red; }
-
         #base-view, #monitor { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-
         #base-view img, #camera-image { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%) sepia(0.1) brightness(0.7) contrast(1.3); transition: filter 0.3s; }
-
         #base-view { display: block; }
-
         #monitor { display: none; }
-
-        #doors-btn, #toggle-btn {
-
-            position: absolute; left: 50%; transform: translateX(-50%);
-
-            background: #001100; color: lime; border: 3px solid lime; font-family: monospace; cursor: pointer; transition: all 0.3s; z-index: 20;
-
-        }
-
+        #doors-btn, #toggle-btn { position: absolute; left: 50%; transform: translateX(-50%); background: #001100; color: lime; border: 3px solid lime; font-family: monospace; cursor: pointer; transition: all 0.3s; z-index: 20; }
         #doors-btn { bottom: 80px; padding: 15px 40px; font-size: 1.8em; }
-
         #toggle-btn { bottom: 20px; padding: 15px 30px; font-size: 1.5em; }
-
         #doors-btn:hover:not(.disabled), #toggle-btn:hover:not(.disabled) { background: #003300; box-shadow: 0 0 20px lime; }
-
         .disabled { opacity: 0.5; cursor: not-allowed; }
-
-        .jumpscare #camera-image, .chaos #camera-image {
-
-            filter: grayscale(0%) brightness(3) contrast(3) saturate(3) !important;
-
-            clip-path: inset(15% 20% 20% 20%) !important;
-
-            object-position: center !important;
-
-            transform: scale(1.5) !important; z-index: 50;
-
-        }
-
-        #static-overlay {
-
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-
-            background: url('https://img.freepik.com/free-vector/white-black-grainy-noise-stipple-texture-background_1017-51837.jpg') repeat;
-
-            opacity: 0.25; pointer-events: none; animation: static 0.05s infinite; z-index: 10;
-
-        }
-
+        .jumpscare #camera-image, .chaos #camera-image { filter: grayscale(0%) brightness(3) contrast(3) saturate(3) !important; clip-path: inset(15% 20% 20% 20%) !important; object-position: center !important; transform: scale(1.5) !important; z-index: 50; }
+        #static-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://img.freepik.com/free-vector/white-black-grainy-noise-stipple-texture-background_1017-51837.jpg') repeat; opacity: 0.25; pointer-events: none; animation: static 0.05s infinite; z-index: 10; }
         @keyframes static { 0% { background-position: 0 0; } 100% { background-position: 100px 100px; } }
-
         @keyframes shake-mild { 0%,100% { transform: translate(0,0); } 25% { transform: translate(-5px,-5px); } 50% { transform: translate(5px,5px); } 75% { transform: translate(-3px,3px); } }
-
-        @keyframes shake-intense { 0%,100% { transform: translate(0,0) rotate(0deg); } 10% { transform: translate(-10px,-10px) rotate(-2deg); } ... } /* abbreviated for space */
-
+        @keyframes shake-intense { 0%,100% { transform: translate(0,0) rotate(0deg); } 10% { transform: translate(-10px,-10px) rotate(-2deg); } 20% { transform: translate(10px,10px) rotate(2deg); } 30% { transform: translate(-8px,8px) rotate(-1deg); } 40% { transform: translate(8px,-8px) rotate(1deg); } 50% { transform: translate(-12px,12px) rotate(-3deg); } 60% { transform: translate(12px,-12px) rotate(3deg); } 70% { transform: translate(-5px,5px) rotate(-1.5deg); } 80% { transform: translate(5px,-5px) rotate(1.5deg); } 90% { transform: translate(-10px,10px) rotate(-2.5deg); } }
         @keyframes flash { 0%,50% { background: black; } 25%,75% { background: red; } }
-
         .jumpscare #game-area { animation: shake-mild 0.3s infinite, flash 0.15s 4; border-color: red !important; box-shadow: 0 0 50px red !important; }
-
         .chaos #game-area { animation: shake-intense 0.1s infinite, flash 0.05s infinite; border-color: #ff0000 !important; box-shadow: 0 0 100px #ff0000 !important; }
-
-        #urgent-overlay {
-
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,0,0,0.7);
-
-            display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 30;
-
-            color: white; font-size: 3em; text-shadow: 0 0 10px black;
-
-        }
-
+        #urgent-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,0,0,0.7); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 30; color: white; font-size: 3em; text-shadow: 0 0 10px black; }
         #urgent-doors { background: #ff0000; color: white; border: 5px solid yellow; padding: 20px 50px; font-size: 2em; margin-top: 20px; cursor: pointer; }
-
         #timer-countdown { font-size: 4em; color: yellow; text-shadow: 0 0 20px red; }
-
         #camera-label, #base-label { position: absolute; top: 10px; left: 10px; font-size: 1.8em; background: rgba(0,0,0,0.8); padding: 5px 10px; border-radius: 5px; text-shadow: 0 0 5px lime; z-index: 15; }
-
         #buttons { margin-top: 140px; display: flex; flex-wrap: wrap; justify-content: center; }
-
         button { background: #001100; color: lime; border: 2px solid lime; padding: 12px 24px; margin: 8px; cursor: pointer; font-family: monospace; font-size: 1.1em; transition: all 0.3s; }
-
         button:hover { background: #003300; box-shadow: 0 0 15px lime; }
-
         #status { margin-top: 10px; font-size: 1.2em; }
-
-        #game-over, #game-win {
-
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9);
-
-            color: red; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 200; font-size: 3em;
-
-        }
-
+        #game-over, #game-win { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); color: red; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 200; font-size: 3em; }
         #game-win { color: lime; }
-
         #restart-btn { margin-top: 30px; padding: 20px 50px; font-size: 1.5em; background: lime; color: black; border: none; border-radius: 10px; cursor: pointer; }
-
-        #low-power-audio { position: absolute; width: 1px; height: 1px; opacity: 0; }
-
+        #low-power-audio { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
     </style>
-
 </head>
-
 <body>
-
     <h1>FNAE: Five Nights at Epstein's - Night 1</h1>
-
     <div id="clock">12:00 AM</div>
-
     <div id="power-bar"><div id="power-fill"></div></div>
-
     <div id="power-text">POWER: 100%</div>
 
     <div id="game-area">
-
         <div id="base-view">
-
-            <img id="base-image" src="https://upload.wikimedia.org/wikipedia/commons/5/58/EFTA00002940-Temple_-_Blue-and-white_striped_building_with_a_red-and-white_labyrinth_in_front_set_against_a_tropical_backdrop_of_palm_trees_and_the_ocean_under_a_bright_sky.jpg" alt="Temple">
-
+            <img id="base-image" src="https://upload.wikimedia.org/wikipedia/commons/5/58/EFTA00002940-Temple_-_Blue-and-white_striped_building_with_a_red-and-white_labyrinth_in_front_set_against_a_tropical_backdrop_of_palm_trees_and_the_ocean_under_a_bright_sky.jpg" alt="Temple Exterior">
             <div id="base-label">BASE: Temple Overlook - Doors Open</div>
-
             <button id="doors-btn">CLOSE DOORS</button>
-
         </div>
-
         <div id="monitor">
-
-            <img id="camera-image" src="" alt="CCTV">
-
+            <img id="camera-image" src="" alt="CCTV Feed">
             <div id="static-overlay"></div>
-
             <div id="camera-label">CAM Loading...</div>
-
         </div>
-
         <button id="toggle-btn">OPEN CAMERAS</button>
-
         <div id="urgent-overlay">
-
             <div>EPSTEIN AT THE DOOR!</div>
-
             <div>CLOSE DOORS NOW!</div>
-
             <div id="timer-countdown">6</div>
-
             <button id="urgent-doors">CLOSE DOORS!</button>
-
         </div>
-
     </div>
 
     <div id="buttons"></div>
-
     <div id="status">Doors Open - Temple Secure</div>
 
     <div id="game-over">
-
         <div>GAME OVER</div>
-
         <div>EPSTEIN GOT YOU!</div>
-
         <button id="restart-btn">RESTART NIGHT</button>
-
     </div>
 
     <div id="game-win">
-
         <div id="win-title">NIGHT 1 COMPLETE!</div>
-
         <div>YOU SURVIVED!</div>
-
         <button id="restart-btn">NEXT NIGHT</button>
-
     </div>
 
-    <!-- Hidden YouTube player for low-power alarm -->
-
-    <iframe id="low-power-audio" src="" frameborder="0" allow="autoplay"></iframe>
+    <!-- Hidden audio for Red Sun in the Sky propaganda music -->
+    <audio id="low-power-audio" loop>
+        <source src="https://www.myinstants.com/media/sounds/mao-zedong-propaganda-music-red-sun-in-the-sky.mp3" type="audio/mpeg">
+    </audio>
 
     <script>
-
         const cameras = [
-
             { name: 'CAM01 - Pool Area', url: 'https://ichef.bbci.co.uk/images/ic/1024xn/p0mlfd2z.jpg' },
-
             { name: 'CAM02 - Courtyard', url: 'https://images.axios.com/oxDRBO-_3qoSiF03cVItwIt1I5U=/12x0:2714x1520/1920x1080/2025/12/03/1764780535196.png' },
-
             { name: 'CAM03 - Bedroom', url: 'https://d3i6fh83elv35t.cloudfront.net/static/2025/12/IMG_5201S-1024x682.jpg' },
-
             { name: 'CAM04 - Bathroom', url: 'https://d3i6fh83elv35t.cloudfront.net/static/2025/12/IMG_5254S-1024x682.jpg' },
-
             { name: 'CAM05 - Hallway/Office', url: 'https://hyperallergic.com/content/images/2025/12/epsteinphotos1.jpg' },
-
             { name: 'CAM06 - Dental Room', url: 'https://s.abcnews.com/images/US/epstein-house-2-rt-jef-251203_1764792198354_hpMain_2_16x9_1600.jpg' }
-
         ];
 
         const jumpscares = [
-
             'https://ichef.bbci.co.uk/ace/standard/976/cpsprodpb/14361/production/_107858728_49c1502b-76d9-4964-a8f0-e7662db8efcb.jpg',
-
             'https://static01.nyt.com/images/2019/10/31/multimedia/31EPSTEIN-autopsy-print/30EPSTEIN-autopsy-videoSixteenByNineJumbo1600.jpg',
-
             'https://s.abcnews.com/images/Politics/jeffrey-epstein-rt-gmh-230602_1685726052800_hpMain_2_16x9_1600.jpg',
-
             'https://media.cnn.com/api/v1/images/stellar/prod/211124001738-jeffrey-epstein-sex-offender-mugshot-file-2013.jpg',
-
             'https://ichef.bbci.co.uk/ace/standard/976/cpsprodpb/13A0A/production/_109749308_epstein.jpg'
-
         ];
 
-        // Elements
-
+        // DOM elements
         const clockEl = document.getElementById('clock');
-
         const powerFill = document.getElementById('power-fill');
-
         const powerText = document.getElementById('power-text');
-
         const gameArea = document.getElementById('game-area');
-
         const baseView = document.getElementById('base-view');
-
         const monitor = document.getElementById('monitor');
-
         const toggleBtn = document.getElementById('toggle-btn');
-
         const doorsBtn = document.getElementById('doors-btn');
-
         const buttonsDiv = document.getElementById('buttons');
-
         const cameraImage = document.getElementById('camera-image');
-
         const cameraLabel = document.getElementById('camera-label');
-
         const baseLabel = document.getElementById('base-label');
-
         const status = document.getElementById('status');
-
         const gameOver = document.getElementById('game-over');
-
         const gameWin = document.getElementById('game-win');
-
         const winTitle = document.getElementById('win-title');
-
         const restartBtn = document.getElementById('restart-btn');
-
         const urgentOverlay = document.getElementById('urgent-overlay');
-
         const urgentDoors = document.getElementById('urgent-doors');
-
         const timerCountdown = document.getElementById('timer-countdown');
-
         const lowPowerAudio = document.getElementById('low-power-audio');
 
-        // Game state
-
+        // State
         let currentNight = 1;
-
         let isGameOver = false;
-
         let nightStartTime;
-
         let power = 100;
-
         let isCamerasOpen = false;
-
         let doorsClosed = false;
-
         let canOpenDoors = true;
-
         let currentCam = 0;
-
         let powerDrainInterval, clockInterval, jumpscareTimer, doorTimerId, noCamTimer;
-
-        let lowPowerSoundPlayed = false;
+        let lowPowerTriggered = false;
 
         const NO_CAM_DEATH_DELAY = 20000;
+        const SECONDS_PER_GAME_HOUR = 40; // ~4 min full night; increase for longer (e.g. 80 = ~8 min)
 
-        const SECONDS_PER_GAME_HOUR = 44; // ~4.4 min per in-game hour → full night ~26 min
-
-        // YouTube low-power alarm (video ID: xGxj2iHAtzE)
-
-        const LOW_POWER_VIDEO_ID = 'xGxj2iHAtzE';
-
-        cameras.forEach((cam, i) => {
-
+        cameras.forEach((cam, idx) => {
             const btn = document.createElement('button');
-
             btn.textContent = cam.name;
-
-            btn.onclick = () => switchCam(i);
-
+            btn.onclick = () => switchCam(idx);
             buttonsDiv.appendChild(btn);
-
         });
 
         function initNight() {
-
             power = 100;
-
             isCamerasOpen = false;
-
             doorsClosed = false;
-
             canOpenDoors = true;
-
             currentCam = 0;
-
             isGameOver = false;
-
-            lowPowerSoundPlayed = false;
-
+            lowPowerTriggered = false;
             nightStartTime = Date.now();
-
-            lowPowerAudio.src = ''; // stop sound
+            lowPowerAudio.pause();
+            lowPowerAudio.currentTime = 0;
 
             updatePower();
-
             document.body.classList.remove('low-power', 'chaos');
-
             gameArea.classList.remove('jumpscare', 'chaos');
-
             gameOver.style.display = 'none';
-
             gameWin.style.display = 'none';
-
             urgentOverlay.style.display = 'none';
 
             closeCameras();
-
             clearAllTimers();
-
             clockInterval = setInterval(updateClock, 1000);
-
             updateClock();
 
             document.querySelector('h1').textContent = `FNAE: Five Nights at Epstein's - Night ${currentNight}`;
-
             winTitle.textContent = `NIGHT ${currentNight} COMPLETE!`;
-
-            restartBtn.textContent = currentNight >= 5 ? 'YOU WON THE GAME!' : 'NEXT NIGHT';
+            restartBtn.textContent = (currentNight >= 5) ? 'YOU WON THE GAME!' : 'NEXT NIGHT';
 
             doorsBtn.textContent = 'CLOSE DOORS';
-
             doorsBtn.classList.remove('disabled');
-
             toggleBtn.classList.remove('disabled');
-
             status.textContent = 'Doors Open - Temple Secure';
-
             baseLabel.textContent = 'BASE: Temple Overlook - Doors Open';
-
         }
 
         function clearAllTimers() {
-
-            [powerDrainInterval, clockInterval, jumpscareTimer, doorTimerId, noCamTimer].forEach(clearInterval);
-
-            [powerDrainInterval, clockInterval, jumpscareTimer, doorTimerId, noCamTimer].forEach(clearTimeout);
-
+            clearInterval(powerDrainInterval);
+            clearInterval(clockInterval);
+            clearTimeout(jumpscareTimer);
+            clearTimeout(doorTimerId);
+            clearTimeout(noCamTimer);
+            powerDrainInterval = clockInterval = jumpscareTimer = doorTimerId = noCamTimer = null;
         }
 
         function updatePower() {
-
             powerFill.style.width = Math.max(power, 0) + '%';
-
             powerText.textContent = `POWER: ${Math.floor(power)}%`;
-
             if (power <= 20) {
-
                 document.body.classList.add('low-power');
-
-                if (!lowPowerSoundPlayed) {
-
-                    lowPowerAudio.src = `https://www.youtube.com/embed/${LOW_POWER_VIDEO_ID}?autoplay=1&loop=1&playlist=${LOW_POWER_VIDEO_ID}&mute=0&controls=0&showinfo=0&rel=0`;
-
-                    lowPowerSoundPlayed = true;
-
+                if (!lowPowerTriggered) {
+                    lowPowerAudio.play().catch(e => console.log("Autoplay blocked:", e)); // may need interaction
+                    lowPowerTriggered = true;
                 }
-
             } else {
-
                 document.body.classList.remove('low-power');
-
             }
-
             if (power <= 0) gameOverFunc();
-
         }
 
         function drainPower() {
-
-            let drain = 0;
-
-            if (isCamerasOpen) drain += 0.5;
-
-            if (doorsClosed) drain += 1.0;
-
+            let drain = (isCamerasOpen ? 0.5 : 0) + (doorsClosed ? 1.0 : 0);
             power = Math.max(0, power - drain);
-
             updatePower();
-
         }
 
         function updateClock() {
+            const elapsedSec = (Date.now() - nightStartTime) / 1000;
+            const gameHoursPassed = elapsedSec / SECONDS_PER_GAME_HOUR;
 
-            const elapsed = (Date.now() - nightStartTime) / 1000;
-
-            const gameHours = elapsed / SECONDS_PER_GAME_HOUR;
-
-            if (gameHours >= 6) {
-
+            if (gameHoursPassed >= 6) {
                 winNight();
-
                 return;
-
             }
 
-            const hour = Math.floor(gameHours) + 12;
-
-            const mins = Math.floor((gameHours % 1) * 60);
-
-            clockEl.textContent = `${hour % 12 || 12}:${mins.toString().padStart(2,'0')} ${hour < 12 ? 'AM' : 'AM'}`; // stays AM for theme
-
+            const currentHour = 12 + Math.floor(gameHoursPassed);
+            const mins = Math.floor((gameHoursPassed % 1) * 60);
+            const displayHour = currentHour % 12 || 12;
+            clockEl.textContent = `${displayHour}:${mins.toString().padStart(2, '0')} AM`;
         }
 
-        function switchCam(idx) {
-
+        function switchCam(index) {
             if (isGameOver || doorsClosed) return;
-
-            currentCam = idx;
-
-            cameraImage.src = cameras[idx].url;
-
-            cameraLabel.textContent = cameras[idx].name;
-
+            currentCam = index;
+            cameraImage.src = cameras[index].url;
+            cameraLabel.textContent = cameras[index].name;
             clearTimeout(jumpscareTimer);
-
             scheduleJumpscare();
-
         }
 
         function scheduleJumpscare() {
-
             if (!isCamerasOpen || doorsClosed || isGameOver) return;
-
             const delay = 8000 + Math.random() * 25000;
-
             jumpscareTimer = setTimeout(triggerJumpscare, delay);
-
         }
 
         function triggerJumpscare() {
-
             if (!isCamerasOpen || doorsClosed || isGameOver) return;
-
             playScreech();
-
-            cameraImage.src = jumpscares[Math.floor(Math.random() * jumpscares.length)];
-
+            const scare = jumpscares[Math.floor(Math.random() * jumpscares.length)];
+            cameraImage.src = scare;
             cameraLabel.textContent = '!!! EPSTEIN !!!';
-
             gameArea.classList.add('jumpscare');
-
             urgentOverlay.style.display = 'flex';
-
             let timeLeft = 6;
-
             timerCountdown.textContent = timeLeft;
-
-            const countdown = setInterval(() => {
-
+            const cd = setInterval(() => {
                 timeLeft--;
-
                 timerCountdown.textContent = timeLeft;
-
                 if (timeLeft <= 0) {
-
-                    clearInterval(countdown);
-
+                    clearInterval(cd);
                     failJumpscare();
-
                 }
-
             }, 1000);
-
         }
 
         function successJumpscare() {
-
             urgentOverlay.style.display = 'none';
-
             gameArea.classList.remove('jumpscare');
-
             playBang();
-
             closeDoors();
-
             switchCam(currentCam);
-
             scheduleJumpscare();
-
         }
 
         function failJumpscare() {
-
             urgentOverlay.style.display = 'none';
-
             chaosMode();
-
         }
 
         function chaosMode() {
-
             gameArea.classList.add('chaos');
-
             document.body.classList.add('chaos');
-
             playBang(true);
-
-            let count = 0;
-
-            const chaosInt = setInterval(() => {
-
+            let flashes = 0;
+            const int = setInterval(() => {
                 cameraImage.src = jumpscares[Math.floor(Math.random() * jumpscares.length)];
-
                 playScreech();
-
-                count++;
-
-                if (count >= 20) {
-
-                    clearInterval(chaosInt);
-
+                flashes++;
+                if (flashes >= 20) {
+                    clearInterval(int);
                     gameOverFunc();
-
                 }
-
             }, 150);
-
         }
 
         function closeDoors() {
-
-            if (!canOpenDoors) return;
-
             doorsClosed = true;
-
             canOpenDoors = false;
-
             doorsBtn.textContent = 'OPEN DOORS';
-
             doorsBtn.classList.add('disabled');
-
             baseLabel.textContent = 'BASE: Temple Overlook - Doors Closed';
-
             status.textContent = 'Doors Closed - Extra Power Drain';
-
-            setTimeout(() => { canOpenDoors = true; doorsBtn.classList.remove('disabled'); }, 10000);
-
+            doorTimerId = setTimeout(() => {
+                canOpenDoors = true;
+                doorsBtn.classList.remove('disabled');
+            }, 10000);
         }
 
         function openDoors() {
-
             if (!canOpenDoors) return;
-
             doorsClosed = false;
-
             doorsBtn.textContent = 'CLOSE DOORS';
-
             baseLabel.textContent = 'BASE: Temple Overlook - Doors Open';
-
             status.textContent = isCamerasOpen ? 'Cameras Open - Monitor...' : 'Doors Open - Temple Secure';
-
         }
 
-        function playScreech(vol = 0.3, start = 800, end = 2000) {
-
+        function playScreech(vol=0.3, startFreq=800, endFreq=2000) {
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
-
-            const osc = ctx.createOscillator(), gain = ctx.createGain();
-
-            osc.connect(gain); gain.connect(ctx.destination);
-
-            osc.frequency.setValueAtTime(start, ctx.currentTime);
-
-            osc.frequency.exponentialRampToValueAtTime(end, ctx.currentTime + 0.5);
-
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.setValueAtTime(startFreq, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(endFreq, ctx.currentTime + 0.5);
             gain.gain.setValueAtTime(vol, ctx.currentTime);
-
             gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
-
-            osc.start(); osc.stop(ctx.currentTime + 0.5);
-
+            osc.start();
+            osc.stop(ctx.currentTime + 0.5);
         }
 
-        function playBang(loud = false) {
-
+        function playBang(loud=false) {
             playScreech(loud ? 0.4 : 0.2, 100, 3000);
-
         }
 
         function closeCameras() {
-
             isCamerasOpen = false;
-
             baseView.style.display = 'block';
-
             monitor.style.display = 'none';
-
             toggleBtn.textContent = 'OPEN CAMERAS';
-
             buttonsDiv.style.display = 'none';
-
             status.textContent = doorsClosed ? 'Doors Closed - Extra Power Drain' : 'Doors Open - Temple Secure';
-
             clearTimeout(jumpscareTimer);
-
             clearTimeout(noCamTimer);
-
             noCamTimer = setTimeout(() => {
-
-                if (!isCamerasOpen && !isGameOver) chaosMode(), gameOverFunc();
-
+                if (!isCamerasOpen && !isGameOver) {
+                    chaosMode();
+                    gameOverFunc();
+                }
             }, NO_CAM_DEATH_DELAY);
-
-            if (!powerDrainInterval) return;
-
-            clearInterval(powerDrainInterval); powerDrainInterval = null;
-
+            if (powerDrainInterval) clearInterval(powerDrainInterval);
+            powerDrainInterval = null;
         }
 
         function openCameras() {
-
             if (power <= 0 || isGameOver) return;
-
             isCamerasOpen = true;
-
             baseView.style.display = 'none';
-
             monitor.style.display = 'block';
-
             toggleBtn.textContent = 'CLOSE CAMERAS';
-
             buttonsDiv.style.display = 'flex';
-
             status.textContent = doorsClosed ? 'Doors Closed - Cams On' : 'Cameras Open - Monitor...';
-
             switchCam(currentCam);
-
             if (!powerDrainInterval) powerDrainInterval = setInterval(drainPower, 1000);
-
             if (!doorsClosed) scheduleJumpscare();
-
             clearTimeout(noCamTimer);
-
         }
 
         function gameOverFunc() {
-
             isGameOver = true;
-
             playBang(true);
-
             chaosMode();
-
             toggleBtn.classList.add('disabled');
-
             doorsBtn.classList.add('disabled');
-
             clearAllTimers();
-
+            lowPowerAudio.pause();
             setTimeout(() => gameOver.style.display = 'flex', 2000);
-
         }
 
         function winNight() {
-
             isGameOver = true;
-
             clearAllTimers();
-
-            lowPowerAudio.src = '';
-
+            lowPowerAudio.pause();
+            gameWin.style.display = 'flex';
             if (currentNight >= 5) {
-
-                gameWin.style.display = 'flex';
-
                 winTitle.textContent = 'YOU SURVIVED ALL 5 NIGHTS!';
-
                 restartBtn.textContent = 'PLAY AGAIN';
-
-                restartBtn.onclick = () => { currentNight = 1; initNight(); };
-
-            } else {
-
-                gameWin.style.display = 'flex';
-
-                restartBtn.onclick = () => { currentNight++; initNight(); };
-
             }
-
         }
 
         toggleBtn.onclick = () => {
-
             if (isGameOver) return;
-
-            isCamerasOpen ? closeCameras() : openCameras();
-
+            if (isCamerasOpen) closeCameras();
+            else openCameras();
         };
 
         doorsBtn.onclick = () => {
-
             if (isGameOver) return;
-
-            doorsClosed ? openDoors() : closeDoors();
-
+            if (doorsClosed) openDoors();
+            else closeDoors();
         };
 
         urgentDoors.onclick = successJumpscare;
 
         restartBtn.onclick = () => {
-
             if (currentNight >= 5) currentNight = 1;
-
             else currentNight++;
-
             initNight();
-
         };
 
         // Start game
-
         initNight();
-
     </script>
-
 </body>
-
 </html>
