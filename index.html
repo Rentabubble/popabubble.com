@@ -87,7 +87,6 @@
         <button id="restart-btn">NEXT NIGHT</button>
     </div>
 
-    <!-- Hidden audio for Red Sun in the Sky propaganda music -->
     <audio id="low-power-audio" loop>
         <source src="https://www.myinstants.com/media/sounds/mao-zedong-propaganda-music-red-sun-in-the-sky.mp3" type="audio/mpeg">
     </audio>
@@ -146,7 +145,7 @@
         let lowPowerTriggered = false;
 
         const NO_CAM_DEATH_DELAY = 20000;
-        const SECONDS_PER_GAME_HOUR = 40; // ~4 min full night; increase for longer (e.g. 80 = ~8 min)
+        const SECONDS_PER_GAME_HOUR = 40; // ~4 min full night
 
         cameras.forEach((cam, idx) => {
             const btn = document.createElement('button');
@@ -205,7 +204,7 @@
             if (power <= 20) {
                 document.body.classList.add('low-power');
                 if (!lowPowerTriggered) {
-                    lowPowerAudio.play().catch(e => console.log("Autoplay blocked:", e)); // may need interaction
+                    lowPowerAudio.play().catch(e => console.log("Autoplay blocked - click anywhere first:", e));
                     lowPowerTriggered = true;
                 }
             } else {
@@ -241,7 +240,7 @@
             cameraImage.src = cameras[index].url;
             cameraLabel.textContent = cameras[index].name;
             clearTimeout(jumpscareTimer);
-            scheduleJumpscare();
+            if (!doorsClosed) scheduleJumpscare();
         }
 
         function scheduleJumpscare() {
@@ -251,7 +250,13 @@
         }
 
         function triggerJumpscare() {
-            if (!isCamerasOpen || doorsClosed || isGameOver) return;
+            // KEY CHANGE: Epstein can ONLY attack if doors are OPEN
+            if (!isCamerasOpen || doorsClosed || isGameOver) {
+                // If doors are closed → no jumpscare happens
+                scheduleJumpscare(); // reschedule instead of triggering
+                return;
+            }
+
             playScreech();
             const scare = jumpscares[Math.floor(Math.random() * jumpscares.length)];
             cameraImage.src = scare;
@@ -319,6 +324,7 @@
             doorsBtn.textContent = 'CLOSE DOORS';
             baseLabel.textContent = 'BASE: Temple Overlook - Doors Open';
             status.textContent = isCamerasOpen ? 'Cameras Open - Monitor...' : 'Doors Open - Temple Secure';
+            if (isCamerasOpen) scheduleJumpscare();
         }
 
         function playScreech(vol=0.3, startFreq=800, endFreq=2000) {
