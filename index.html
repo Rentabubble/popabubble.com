@@ -250,10 +250,9 @@
         }
 
         function triggerJumpscare() {
-            // KEY CHANGE: Epstein can ONLY attack if doors are OPEN
             if (!isCamerasOpen || doorsClosed || isGameOver) {
-                // If doors are closed → no jumpscare happens
-                scheduleJumpscare(); // reschedule instead of triggering
+                // If doors are closed, reschedule instead of triggering
+                scheduleJumpscare();
                 return;
             }
 
@@ -265,17 +264,18 @@
             urgentOverlay.style.display = 'flex';
             let timeLeft = 6;
             timerCountdown.textContent = timeLeft;
-            const cd = setInterval(() => {
+            const countdownInterval = setInterval(() => {
                 timeLeft--;
                 timerCountdown.textContent = timeLeft;
                 if (timeLeft <= 0) {
-                    clearInterval(cd);
+                    clearInterval(countdownInterval);
                     failJumpscare();
                 }
             }, 1000);
         }
 
         function successJumpscare() {
+            clearInterval(timerCountdown); // Stop any ongoing countdown
             urgentOverlay.style.display = 'none';
             gameArea.classList.remove('jumpscare');
             playBang();
@@ -312,6 +312,10 @@
             doorsBtn.classList.add('disabled');
             baseLabel.textContent = 'BASE: Temple Overlook - Doors Closed';
             status.textContent = 'Doors Closed - Extra Power Drain';
+            // If urgent overlay is active, treat close as success
+            if (urgentOverlay.style.display === 'flex') {
+                successJumpscare();
+            }
             doorTimerId = setTimeout(() => {
                 canOpenDoors = true;
                 doorsBtn.classList.remove('disabled');
