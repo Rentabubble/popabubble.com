@@ -5,7 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FNAE: Five Nights at Epstein's</title>
     <style>
-        body { background: black; color: lime; font-family: monospace; text-align: center; margin: 0; padding: 20px; overflow: hidden; transition: all 0.3s; }
+        body {
+            background: black;
+            color: lime;
+            font-family: monospace;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
         h1 { font-size: 2.2em; margin-bottom: 15px; text-shadow: 0 0 10px red; }
         #clock { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); font-size: 2em; color: lime; text-shadow: 0 0 10px lime; z-index: 100; }
         #power-bar { position: fixed; top: 60px; right: 10px; width: 200px; height: 20px; background: #111; border: 2px solid lime; z-index: 100; }
@@ -19,20 +28,22 @@
         #base-view img, #camera-image { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%) sepia(0.1) brightness(0.7) contrast(1.3); transition: filter 0.3s; }
         #base-view { display: block; }
         #monitor { display: none; }
-        #doors-btn, #toggle-btn { position: absolute; left: 50%; transform: translateX(-50%); background: #001100; color: lime; border: 3px solid lime; font-family: monospace; cursor: pointer; transition: all 0.3s; z-index: 20; }
+        #doors-btn, #toggle-btn {
+            position: absolute; left: 50%; transform: translateX(-50%);
+            background: #001100; color: lime; border: 3px solid lime; font-family: monospace;
+            cursor: pointer; transition: all 0.3s; z-index: 20;
+        }
         #doors-btn { bottom: 80px; padding: 15px 40px; font-size: 1.8em; }
         #toggle-btn { bottom: 20px; padding: 15px 30px; font-size: 1.5em; }
         #doors-btn:hover:not(.disabled), #toggle-btn:hover:not(.disabled) { background: #003300; box-shadow: 0 0 20px lime; }
         .disabled { opacity: 0.5; cursor: not-allowed; }
-        .jumpscare #camera-image, .chaos #camera-image { filter: grayscale(0%) brightness(3) contrast(3) saturate(3) !important; clip-path: inset(15% 20% 20% 20%) !important; object-position: center !important; transform: scale(1.5) !important; z-index: 50; }
         #static-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://img.freepik.com/free-vector/white-black-grainy-noise-stipple-texture-background_1017-51837.jpg') repeat; opacity: 0.25; pointer-events: none; animation: static 0.05s infinite; z-index: 10; }
         @keyframes static { 0% { background-position: 0 0; } 100% { background-position: 100px 100px; } }
-        @keyframes shake-mild { 0%,100% { transform: translate(0,0); } 25% { transform: translate(-5px,-5px); } 50% { transform: translate(5px,5px); } 75% { transform: translate(-3px,3px); } }
-        @keyframes shake-intense { 0%,100% { transform: translate(0,0) rotate(0deg); } 10% { transform: translate(-10px,-10px) rotate(-2deg); } 20% { transform: translate(10px,10px) rotate(2deg); } 30% { transform: translate(-8px,8px) rotate(-1deg); } 40% { transform: translate(8px,-8px) rotate(1deg); } 50% { transform: translate(-12px,12px) rotate(-3deg); } 60% { transform: translate(12px,-12px) rotate(3deg); } 70% { transform: translate(-5px,5px) rotate(-1.5deg); } 80% { transform: translate(5px,-5px) rotate(1.5deg); } 90% { transform: translate(-10px,10px) rotate(-2.5deg); } }
-        @keyframes flash { 0%,50% { background: black; } 25%,75% { background: red; } }
-        .jumpscare #game-area { animation: shake-mild 0.3s infinite, flash 0.15s 4; border-color: red !important; box-shadow: 0 0 50px red !important; }
-        .chaos #game-area { animation: shake-intense 0.1s infinite, flash 0.05s infinite; border-color: #ff0000 !important; box-shadow: 0 0 100px #ff0000 !important; }
-        #urgent-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,0,0,0.7); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 30; color: white; font-size: 3em; text-shadow: 0 0 10px black; }
+        #urgent-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,0,0,0.7);
+            display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 30;
+            color: white; font-size: 3em; text-shadow: 0 0 10px black;
+        }
         #urgent-doors { background: #ff0000; color: white; border: 5px solid yellow; padding: 20px 50px; font-size: 2em; margin-top: 20px; cursor: pointer; }
         #timer-countdown { font-size: 4em; color: yellow; text-shadow: 0 0 20px red; }
         #camera-label, #base-label { position: absolute; top: 10px; left: 10px; font-size: 1.8em; background: rgba(0,0,0,0.8); padding: 5px 10px; border-radius: 5px; text-shadow: 0 0 5px lime; z-index: 15; }
@@ -40,7 +51,10 @@
         button { background: #001100; color: lime; border: 2px solid lime; padding: 12px 24px; margin: 8px; cursor: pointer; font-family: monospace; font-size: 1.1em; transition: all 0.3s; }
         button:hover { background: #003300; box-shadow: 0 0 15px lime; }
         #status { margin-top: 10px; font-size: 1.2em; }
-        #game-over, #game-win { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); color: red; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 200; font-size: 3em; }
+        #game-over, #game-win {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9);
+            color: red; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 200; font-size: 3em;
+        }
         #game-win { color: lime; }
         #restart-btn { margin-top: 30px; padding: 20px 50px; font-size: 1.5em; background: lime; color: black; border: none; border-radius: 10px; cursor: pointer; }
         #low-power-audio { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
@@ -65,9 +79,9 @@
         </div>
         <button id="toggle-btn">OPEN CAMERAS</button>
         <div id="urgent-overlay">
-            <div>EPSTEIN AT THE DOOR!</div>
-            <div>CLOSE DOORS NOW!</div>
-            <div id="timer-countdown">6</div>
+            <div id="urgent-message">SOMEONE IS RUNNING!</div>
+            <div>CLOSE DOORS WITHIN 10 SECONDS!</div>
+            <div id="timer-countdown">10</div>
             <button id="urgent-doors">CLOSE DOORS!</button>
         </div>
     </div>
@@ -77,7 +91,7 @@
 
     <div id="game-over">
         <div>GAME OVER</div>
-        <div>EPSTEIN GOT YOU!</div>
+        <div>THEY GOT AWAY...</div>
         <button id="restart-btn">RESTART NIGHT</button>
     </div>
 
@@ -101,12 +115,13 @@
             { name: 'CAM06 - Dental Room', url: 'https://s.abcnews.com/images/US/epstein-house-2-rt-jef-251203_1764792198354_hpMain_2_16x9_1600.jpg' }
         ];
 
-        const jumpscares = [
-            'https://ichef.bbci.co.uk/ace/standard/976/cpsprodpb/14361/production/_107858728_49c1502b-76d9-4964-a8f0-e7662db8efcb.jpg',
-            'https://static01.nyt.com/images/2019/10/31/multimedia/31EPSTEIN-autopsy-print/30EPSTEIN-autopsy-videoSixteenByNineJumbo1600.jpg',
-            'https://s.abcnews.com/images/Politics/jeffrey-epstein-rt-gmh-230602_1685726052800_hpMain_2_16x9_1600.jpg',
-            'https://media.cnn.com/api/v1/images/stellar/prod/211124001738-jeffrey-epstein-sex-offender-mugshot-file-2013.jpg',
-            'https://ichef.bbci.co.uk/ace/standard/976/cpsprodpb/13A0A/production/_109749308_epstein.jpg'
+        // Epstein list people images (public domain / news photos - replace if needed)
+        const epsteinListFigures = [
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Bill_Clinton_11.jpg/800px-Bill_Clinton_11.jpg',
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Prince_Andrew_2020.jpg/800px-Prince_Andrew_2020.jpg',
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Ghislaine_Maxwell_%28cropped%29.jpg/800px-Ghislaine_Maxwell_%28cropped%29.jpg',
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Donald_Trump_official_portrait.jpg/800px-Donald_Trump_official_portrait.jpg',
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Bill_Gates_2017_%28cropped%29.jpg/800px-Bill_Gates_2017_%28cropped%29.jpg'
         ];
 
         // DOM elements
@@ -128,8 +143,9 @@
         const winTitle = document.getElementById('win-title');
         const restartBtn = document.getElementById('restart-btn');
         const urgentOverlay = document.getElementById('urgent-overlay');
-        const urgentDoors = document.getElementById('urgent-doors');
+        const urgentMessage = document.getElementById('urgent-message');
         const timerCountdown = document.getElementById('timer-countdown');
+        const urgentDoors = document.getElementById('urgent-doors');
         const lowPowerAudio = document.getElementById('low-power-audio');
 
         // State
@@ -141,11 +157,13 @@
         let doorsClosed = false;
         let canOpenDoors = true;
         let currentCam = 0;
-        let powerDrainInterval, clockInterval, jumpscareTimer, doorTimerId, noCamTimer;
+        let powerDrainInterval, clockInterval, figureRunTimer, doorTimerId, noCamTimer;
         let lowPowerTriggered = false;
+        let currentFigure = null;
 
         const NO_CAM_DEATH_DELAY = 20000;
-        const SECONDS_PER_GAME_HOUR = 40; // ~4 min full night
+        const SECONDS_PER_GAME_HOUR = 40;
+        const RUN_AWAY_TIME = 10000; // 10 seconds to close doors
 
         cameras.forEach((cam, idx) => {
             const btn = document.createElement('button');
@@ -165,10 +183,14 @@
             nightStartTime = Date.now();
             lowPowerAudio.pause();
             lowPowerAudio.currentTime = 0;
+            if (currentFigure) {
+                currentFigure.remove();
+                currentFigure = null;
+            }
 
             updatePower();
             document.body.classList.remove('low-power', 'chaos');
-            gameArea.classList.remove('jumpscare', 'chaos');
+            gameArea.classList.remove('chaos');
             gameOver.style.display = 'none';
             gameWin.style.display = 'none';
             urgentOverlay.style.display = 'none';
@@ -180,7 +202,7 @@
 
             document.querySelector('h1').textContent = `FNAE: Five Nights at Epstein's - Night ${currentNight}`;
             winTitle.textContent = `NIGHT ${currentNight} COMPLETE!`;
-            restartBtn.textContent = (currentNight >= 5) ? 'YOU WON THE GAME!' : 'NEXT NIGHT';
+            restartBtn.textContent = currentNight >= 5 ? 'YOU WON THE GAME!' : 'NEXT NIGHT';
 
             doorsBtn.textContent = 'CLOSE DOORS';
             doorsBtn.classList.remove('disabled');
@@ -192,10 +214,10 @@
         function clearAllTimers() {
             clearInterval(powerDrainInterval);
             clearInterval(clockInterval);
-            clearTimeout(jumpscareTimer);
+            clearTimeout(figureRunTimer);
             clearTimeout(doorTimerId);
             clearTimeout(noCamTimer);
-            powerDrainInterval = clockInterval = jumpscareTimer = doorTimerId = noCamTimer = null;
+            powerDrainInterval = clockInterval = figureRunTimer = doorTimerId = noCamTimer = null;
         }
 
         function updatePower() {
@@ -204,7 +226,7 @@
             if (power <= 20) {
                 document.body.classList.add('low-power');
                 if (!lowPowerTriggered) {
-                    lowPowerAudio.play().catch(e => console.log("Autoplay blocked - click anywhere first:", e));
+                    lowPowerAudio.play().catch(() => console.log("Autoplay blocked"));
                     lowPowerTriggered = true;
                 }
             } else {
@@ -220,102 +242,91 @@
         }
 
         function updateClock() {
-            const elapsedSec = (Date.now() - nightStartTime) / 1000;
-            const gameHoursPassed = elapsedSec / SECONDS_PER_GAME_HOUR;
+            const elapsed = (Date.now() - nightStartTime) / 1000;
+            const hours = elapsed / SECONDS_PER_GAME_HOUR;
+            if (hours >= 6) return winNight();
 
-            if (gameHoursPassed >= 6) {
-                winNight();
-                return;
-            }
-
-            const currentHour = 12 + Math.floor(gameHoursPassed);
-            const mins = Math.floor((gameHoursPassed % 1) * 60);
-            const displayHour = currentHour % 12 || 12;
-            clockEl.textContent = `${displayHour}:${mins.toString().padStart(2, '0')} AM`;
+            const hour = Math.floor(hours) + 12;
+            const min = Math.floor((hours % 1) * 60);
+            clockEl.textContent = `${hour % 12 || 12}:${min.toString().padStart(2, '0')} AM`;
         }
 
-        function switchCam(index) {
+        function switchCam(idx) {
             if (isGameOver || doorsClosed) return;
-            currentCam = index;
-            cameraImage.src = cameras[index].url;
-            cameraLabel.textContent = cameras[index].name;
-            clearTimeout(jumpscareTimer);
-            if (!doorsClosed) scheduleJumpscare();
+            currentCam = idx;
+            cameraImage.src = cameras[idx].url;
+            cameraLabel.textContent = cameras[idx].name;
+            clearTimeout(figureRunTimer);
+            scheduleFigureRun();
         }
 
-        function scheduleJumpscare() {
+        function scheduleFigureRun() {
             if (!isCamerasOpen || doorsClosed || isGameOver) return;
-            const delay = 8000 + Math.random() * 25000;
-            jumpscareTimer = setTimeout(triggerJumpscare, delay);
+            const delay = 10000 + Math.random() * 30000;
+            figureRunTimer = setTimeout(showRunningFigure, delay);
         }
 
-        function triggerJumpscare() {
-            if (!isCamerasOpen || doorsClosed || isGameOver) {
-                // If doors are closed, reschedule instead of triggering
-                scheduleJumpscare();
-                return;
-            }
+        function showRunningFigure() {
+            if (!isCamerasOpen || doorsClosed || isGameOver) return;
 
-            playScreech();
-            const scare = jumpscares[Math.floor(Math.random() * jumpscares.length)];
-            cameraImage.src = scare;
-            cameraLabel.textContent = '!!! EPSTEIN !!!';
-            gameArea.classList.add('jumpscare');
+            urgentMessage.textContent = "SOMEONE IS RUNNING!";
             urgentOverlay.style.display = 'flex';
-            let timeLeft = 6;
+
+            let timeLeft = 10;
             timerCountdown.textContent = timeLeft;
-            const countdownInterval = setInterval(() => {
+
+            const countdown = setInterval(() => {
                 timeLeft--;
                 timerCountdown.textContent = timeLeft;
                 if (timeLeft <= 0) {
-                    clearInterval(countdownInterval);
-                    failJumpscare();
+                    clearInterval(countdown);
+                    if (urgentOverlay.style.display === 'flex') {
+                        gameOverFunc(); // They got away → death
+                    }
                 }
             }, 1000);
-        }
 
-        function successJumpscare() {
-            clearInterval(timerCountdown); // Stop any ongoing countdown
-            urgentOverlay.style.display = 'none';
-            gameArea.classList.remove('jumpscare');
-            playBang();
-            closeDoors();
-            switchCam(currentCam);
-            scheduleJumpscare();
-        }
+            // Create running figure image
+            if (currentFigure) currentFigure.remove();
+            currentFigure = document.createElement('img');
+            currentFigure.src = epsteinListFigures[Math.floor(Math.random() * epsteinListFigures.length)];
+            currentFigure.style.position = 'absolute';
+            currentFigure.style.bottom = '20%';
+            currentFigure.style.left = '0';
+            currentFigure.style.height = '60%';
+            currentFigure.style.transition = 'left 10s linear';
+            currentFigure.style.zIndex = '40';
+            monitor.appendChild(currentFigure);
 
-        function failJumpscare() {
-            urgentOverlay.style.display = 'none';
-            chaosMode();
-        }
+            // Animate running off screen
+            setTimeout(() => {
+                currentFigure.style.left = '120%';
+            }, 500);
 
-        function chaosMode() {
-            gameArea.classList.add('chaos');
-            document.body.classList.add('chaos');
-            playBang(true);
-            let flashes = 0;
-            const int = setInterval(() => {
-                cameraImage.src = jumpscares[Math.floor(Math.random() * jumpscares.length)];
-                playScreech();
-                flashes++;
-                if (flashes >= 20) {
-                    clearInterval(int);
-                    gameOverFunc();
-                }
-            }, 150);
+            // If doors closed during this time → success
         }
 
         function closeDoors() {
+            if (!canOpenDoors) return;
             doorsClosed = true;
             canOpenDoors = false;
             doorsBtn.textContent = 'OPEN DOORS';
             doorsBtn.classList.add('disabled');
             baseLabel.textContent = 'BASE: Temple Overlook - Doors Closed';
             status.textContent = 'Doors Closed - Extra Power Drain';
-            // If urgent overlay is active, treat close as success
+
+            // If someone was running → success (they didn't get away)
             if (urgentOverlay.style.display === 'flex') {
-                successJumpscare();
+                urgentOverlay.style.display = 'none';
+                if (currentFigure) {
+                    currentFigure.style.transition = 'left 0.5s';
+                    currentFigure.style.left = '-20%'; // run back or disappear
+                    setTimeout(() => currentFigure.remove(), 600);
+                }
+                playBang();
+                status.textContent = 'Doors Closed - They Didn't Get Away';
             }
+
             doorTimerId = setTimeout(() => {
                 canOpenDoors = true;
                 doorsBtn.classList.remove('disabled');
@@ -328,25 +339,21 @@
             doorsBtn.textContent = 'CLOSE DOORS';
             baseLabel.textContent = 'BASE: Temple Overlook - Doors Open';
             status.textContent = isCamerasOpen ? 'Cameras Open - Monitor...' : 'Doors Open - Temple Secure';
-            if (isCamerasOpen) scheduleJumpscare();
+            if (isCamerasOpen) scheduleFigureRun();
         }
 
-        function playScreech(vol=0.3, startFreq=800, endFreq=2000) {
+        function playBang() {
+            // simple low tone bang
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
             osc.connect(gain);
             gain.connect(ctx.destination);
-            osc.frequency.setValueAtTime(startFreq, ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(endFreq, ctx.currentTime + 0.5);
-            gain.gain.setValueAtTime(vol, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+            osc.frequency.value = 80;
+            gain.gain.setValueAtTime(0.4, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
             osc.start();
-            osc.stop(ctx.currentTime + 0.5);
-        }
-
-        function playBang(loud=false) {
-            playScreech(loud ? 0.4 : 0.2, 100, 3000);
+            osc.stop(ctx.currentTime + 0.4);
         }
 
         function closeCameras() {
@@ -356,15 +363,12 @@
             toggleBtn.textContent = 'OPEN CAMERAS';
             buttonsDiv.style.display = 'none';
             status.textContent = doorsClosed ? 'Doors Closed - Extra Power Drain' : 'Doors Open - Temple Secure';
-            clearTimeout(jumpscareTimer);
+            clearTimeout(figureRunTimer);
             clearTimeout(noCamTimer);
             noCamTimer = setTimeout(() => {
-                if (!isCamerasOpen && !isGameOver) {
-                    chaosMode();
-                    gameOverFunc();
-                }
+                if (!isCamerasOpen && !isGameOver) gameOverFunc();
             }, NO_CAM_DEATH_DELAY);
-            if (powerDrainInterval) clearInterval(powerDrainInterval);
+            clearInterval(powerDrainInterval);
             powerDrainInterval = null;
         }
 
@@ -377,20 +381,19 @@
             buttonsDiv.style.display = 'flex';
             status.textContent = doorsClosed ? 'Doors Closed - Cams On' : 'Cameras Open - Monitor...';
             switchCam(currentCam);
-            if (!powerDrainInterval) powerDrainInterval = setInterval(drainPower, 1000);
-            if (!doorsClosed) scheduleJumpscare();
+            powerDrainInterval = setInterval(drainPower, 1000);
+            if (!doorsClosed) scheduleFigureRun();
             clearTimeout(noCamTimer);
         }
 
         function gameOverFunc() {
             isGameOver = true;
-            playBang(true);
-            chaosMode();
+            playBang();
             toggleBtn.classList.add('disabled');
             doorsBtn.classList.add('disabled');
             clearAllTimers();
             lowPowerAudio.pause();
-            setTimeout(() => gameOver.style.display = 'flex', 2000);
+            setTimeout(() => gameOver.style.display = 'flex', 1500);
         }
 
         function winNight() {
@@ -406,25 +409,22 @@
 
         toggleBtn.onclick = () => {
             if (isGameOver) return;
-            if (isCamerasOpen) closeCameras();
-            else openCameras();
+            isCamerasOpen ? closeCameras() : openCameras();
         };
 
         doorsBtn.onclick = () => {
             if (isGameOver) return;
-            if (doorsClosed) openDoors();
-            else closeDoors();
+            doorsClosed ? openDoors() : closeDoors();
         };
 
-        urgentDoors.onclick = successJumpscare;
+        urgentDoors.onclick = () => closeDoors();
 
         restartBtn.onclick = () => {
-            if (currentNight >= 5) currentNight = 1;
-            else currentNight++;
+            currentNight = currentNight >= 5 ? 1 : currentNight + 1;
             initNight();
         };
 
-        // Start game
+        // Start
         initNight();
     </script>
 </body>
