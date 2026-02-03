@@ -115,7 +115,6 @@
             { name: 'CAM06 - Dental Room', url: 'https://s.abcnews.com/images/US/epstein-house-2-rt-jef-251203_1764792198354_hpMain_2_16x9_1600.jpg' }
         ];
 
-        // Epstein list people images (public domain / news photos - replace if needed)
         const epsteinListFigures = [
             'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Bill_Clinton_11.jpg/800px-Bill_Clinton_11.jpg',
             'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Prince_Andrew_2020.jpg/800px-Prince_Andrew_2020.jpg',
@@ -163,7 +162,7 @@
 
         const NO_CAM_DEATH_DELAY = 20000;
         const SECONDS_PER_GAME_HOUR = 40;
-        const RUN_AWAY_TIME = 10000; // 10 seconds to close doors
+        const RUN_AWAY_TIME = 10000; // 10 seconds
 
         cameras.forEach((cam, idx) => {
             const btn = document.createElement('button');
@@ -189,8 +188,7 @@
             }
 
             updatePower();
-            document.body.classList.remove('low-power', 'chaos');
-            gameArea.classList.remove('chaos');
+            document.body.classList.remove('low-power');
             gameOver.style.display = 'none';
             gameWin.style.display = 'none';
             urgentOverlay.style.display = 'none';
@@ -281,12 +279,11 @@
                 if (timeLeft <= 0) {
                     clearInterval(countdown);
                     if (urgentOverlay.style.display === 'flex') {
-                        gameOverFunc(); // They got away → death
+                        gameOverFunc(); // They escaped
                     }
                 }
             }, 1000);
 
-            // Create running figure image
             if (currentFigure) currentFigure.remove();
             currentFigure = document.createElement('img');
             currentFigure.src = epsteinListFigures[Math.floor(Math.random() * epsteinListFigures.length)];
@@ -298,12 +295,9 @@
             currentFigure.style.zIndex = '40';
             monitor.appendChild(currentFigure);
 
-            // Animate running off screen
             setTimeout(() => {
                 currentFigure.style.left = '120%';
             }, 500);
-
-            // If doors closed during this time → success
         }
 
         function closeDoors() {
@@ -315,16 +309,16 @@
             baseLabel.textContent = 'BASE: Temple Overlook - Doors Closed';
             status.textContent = 'Doors Closed - Extra Power Drain';
 
-            // If someone was running → success (they didn't get away)
+            // If someone was running → success
             if (urgentOverlay.style.display === 'flex') {
                 urgentOverlay.style.display = 'none';
                 if (currentFigure) {
                     currentFigure.style.transition = 'left 0.5s';
-                    currentFigure.style.left = '-20%'; // run back or disappear
+                    currentFigure.style.left = '-20%';
                     setTimeout(() => currentFigure.remove(), 600);
                 }
                 playBang();
-                status.textContent = 'Doors Closed - They Didn't Get Away';
+                status.textContent = 'Doors Closed - They Didn\'t Get Away';
             }
 
             doorTimerId = setTimeout(() => {
@@ -343,7 +337,6 @@
         }
 
         function playBang() {
-            // simple low tone bang
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
@@ -424,7 +417,7 @@
             initNight();
         };
 
-        // Start
+        // Start game
         initNight();
     </script>
 </body>
