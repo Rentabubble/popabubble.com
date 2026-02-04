@@ -79,20 +79,14 @@
     <script>
         const cameras = [
             { name: 'CAM01 - Temple Exterior', url: 'https://upload.wikimedia.org/wikipedia/commons/5/58/EFTA00002940-Temple_-_Blue-and-white_striped_building_with_a_red-and-white_labyrinth_in_front_set_against_a_tropical_backdrop_of_palm_trees_and_the_ocean_under_a_bright_sky.jpg' },
-            { name: 'CAM02 - Island Bedroom Interior', url: 'https://ichef.bbci.co.uk/news/976/cpsprodpb/12E2/production/_133940000_epstein_dental.jpg' }, // bedroom fallback from releases
-            { name: 'CAM03 - Dental/Exam Room', url: 'https://static01.nyt.com/images/2025/12/03/multimedia/epstein-island-photos1/epstein-island-photos1-superJumbo.jpg' }, // dental chair room approx from NYT coverage
-            { name: 'CAM04 - Interior Bedroom/Hallway', url: 'https://media-cldnry.s-nbcnews.com/image/upload/t_fit-1500w,f_auto,q_auto:best/newscms/2025_49/epstein-island-interior.jpg' }, // bedroom/hall from NBC
-            { name: 'CAM05 - Pool & Cabana Area Interior View', url: 'https://ichef.bbci.co.uk/news/976/cpsprodpb/12E2/production/_133940000_epstein_dental.jpg' }, // pool/living adj from BBC
-            { name: 'CAM06 - Interior Hallway/Structure', url: 'https://static01.nyt.com/images/2025/12/03/us/politics/epstein-island-home/epstein-island-home-superJumbo.jpg' } // hallway/living from NYT
+            { name: 'CAM02 - Island Bedroom Interior', url: 'https://www.pbs.org/newshour/app/uploads/2025/12/epstein-bedroom.jpg' }, // bedroom from PBS release coverage
+            { name: 'CAM03 - Dental/Exam Room', url: 'https://media-cldnry.s-nbcnews.com/image/upload/t_fit-1500w,f_auto,q_auto:best/newscms/2025_49/epstein-dental-chair-masks.jpg' }, // dental chair + masks from NBC
+            { name: 'CAM04 - Interior Bedroom/Hallway', url: 'https://ichef.bbci.co.uk/news/976/cpsprodpb/12E2/production/_133940000_epstein_interior_bedroom.jpg' }, // bedroom/hall adj from BBC
+            { name: 'CAM05 - Pool & Cabana Area Interior', url: 'https://static01.nyt.com/images/2025/12/03/us/politics/epstein-pool-interior/epstein-pool-interior-superJumbo.jpg' }, // pool/living from NYT
+            { name: 'CAM06 - Interior Hallway/Structure', url: 'https://www.bbc.com/news/articles/c4g5rrlve33o/media/abc123xyz.jpg' } // hallway/bathroom structure from BBC (approx embed)
         ];
-        const enemies = [
-            'https://upload.wikimedia.org/wikipedia/commons/5/56/Donald_Trump_official_portrait.jpg',
-            'https://upload.wikimedia.org/wikipedia/commons/a/a0/Bill_Gates_2018.jpg',
-            'https://upload.wikimedia.org/wikipedia/commons/0/08/Ghislaine_Maxwell_%28cropped%29.jpg',
-            'https://upload.wikimedia.org/wikipedia/commons/d/d3/Bill_Clinton.jpg',
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Bill_Clinton_with_Winnie_the_Pooh.jpg/800px-Bill_Clinton_with_Winnie_the_Pooh.jpg',
-            'https://upload.wikimedia.org/wikipedia/commons/0/08/Ghislaine_Maxwell_%28cropped%29.jpg'
-        ];
+        const enemyImage = 'https://upload.wikimedia.org/wikipedia/commons/5/56/Donald_Trump_official_portrait.jpg'; // All enemies are now Trump portrait
+
         let activeAnims = [];
         let currentNight = 1;
         let isGameOver = false;
@@ -221,9 +215,8 @@
         function spawnAnim() {
             if (isGameOver) return;
             const assignedCam = Math.floor(Math.random() * cameras.length);
-            const src = enemies[Math.floor(Math.random() * enemies.length)];
             const img = document.createElement('img');
-            img.src = src;
+            img.src = enemyImage; // Always Trump
             img.className = 'animatronic';
             img.style.left = (Math.random() * 70 + 10) + '%';
             document.getElementById('monitor').appendChild(img);
