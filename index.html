@@ -78,23 +78,22 @@
     <script>
         const cameras = [
             { name: 'CAM01 - Temple Exterior', url: 'https://upload.wikimedia.org/wikipedia/commons/5/58/EFTA00002940-Temple_-_Blue-and-white_striped_building_with_a_red-and-white_labyrinth_in_front_set_against_a_tropical_backdrop_of_palm_trees_and_the_ocean_under_a_bright_sky.jpg' },
-            { name: 'CAM02 - Island Bedroom', url: 'https://d3i6fh83elv35t.cloudfront.net/static/2025/12/IMG_5201S-1024x682.jpg' },
-            { name: 'CAM03 - Dental Room', url: 'https://ichef.bbci.co.uk/news/976/cpsprodpb/vivo/live/images/2025/12/12/9eeb2399-334b-48f7-b701-12c00adebbfb.jpg.webp' },
-            { name: 'CAM04 - Pool Area', url: 'https://media-cldnry.s-nbcnews.com/image/upload/t_fit-1500w,f_auto,q_auto:best/newscms/2019_31/2951141/190729-jeffrey-epstein-island-drone-temple-ew-505p.jpg' },
-            { name: 'CAM05 - Hallway Interior', url: 'https://ca-times.brightspotcdn.com/dims4/default/3450867/2147483647/strip/false/crop/3600x2554+0+0/resize/1486x1054!/quality/75/?url=https%3A%2F%2Fcalifornia-times-brightspot.s3.amazonaws.com%2F37%2F25%2F66d2ae2047c2920d9819e12a4978%2Fffeb8cdd42424abcb3c7566cfdcbd9de.jpg' },
-            { name: 'CAM06 - Beachfront', url: 'https://static01.nyt.com/images/2019/08/26/business/00epstein-promo/00epsteinvi3-videoSixteenByNine3000.jpg' }
+            { name: 'CAM02 - Island Bedroom', url: 'https://static.pbs.org/newshour/app/uploads/2025/02/epstein-island-bedroom-1024x683.jpg' },
+            { name: 'CAM03 - Dental/Exam Room', url: 'https://ichef.bbci.co.uk/news/976/cpsprodpb/12E2/production/_133940000_epstein_dental.jpg' },
+            { name: 'CAM04 - Pool & Cabana Area', url: 'https://static01.nyt.com/images/2025/02/28/multimedia/28epstein-photos1/28epstein-photos1-superJumbo.jpg' },
+            { name: 'CAM05 - Interior Hallway', url: 'https://media.cnn.com/api/v1/images/stellar/prod/250228164747-01-epstein-island-photos-restricted.jpg?c=16x9&w=1920&h=1080&q=xw' },
+            { name: 'CAM06 - Beachfront Structure', url: 'https://static.pbs.org/newshour/app/uploads/2025/02/epstein-island-beach-structure-1024x683.jpg' }
         ];
 
         const enemies = [
-            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRb6NTVlUtvDGf3l5XTI3b3n869ppjZZTJ5ag&s',  // Trump
-            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZKnjv9C3myHkrOwDMjdt2GThIj2SPJlFoow&s',  // Gates
-            'https://d3i6fh83elv35t.cloudfront.net/static/2025/12/IMG_5201S-1024x682.jpg',  // Epstein context (adjust if needed)
-            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZKnjv9C3myHkrOwDMjdt2GThIj2SPJlFoow&s',  // Maxwell (placeholder; use real if available)
-            'https://upload.wikimedia.org/wikipedia/commons/d/d3/Bill_Clinton.jpg',  // Clinton portrait
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Bill_Clinton_with_Winnie_the_Pooh.jpg/800px-Bill_Clinton_with_Winnie_the_Pooh.jpg'  // Pooh bear one
+            'https://upload.wikimedia.org/wikipedia/commons/d/d3/Bill_Clinton.jpg',
+            'https://upload.wikimedia.org/wikipedia/commons/5/56/Donald_Trump_official_portrait.jpg',
+            'https://upload.wikimedia.org/wikipedia/commons/a/a0/Bill_Gates_2018.jpg',
+            'https://upload.wikimedia.org/wikipedia/commons/0/08/Ghislaine_Maxwell_%28cropped%29.jpg',
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Bill_Clinton_with_Winnie_the_Pooh.jpg/800px-Bill_Clinton_with_Winnie_the_Pooh.jpg'
         ];
 
-        let activeAnims = [];
+        let activeAnims = []; // {img, assignedCam, position, isActive}
         let currentNight = 1;
         let isGameOver = false;
         let nightStartTime;
@@ -159,7 +158,8 @@
         }
 
         function updatePower() {
-            document.getElementById('power-fill').style.width = Math.max(power, 0) + '%';
+            const fill = document.getElementById('power-fill');
+            fill.style.width = Math.max(power, 0) + '%';
             document.getElementById('power-text').textContent = `POWER: ${Math.floor(power)}%`;
             if (power <= 20 && !lowPowerTriggered) {
                 document.body.classList.add('low-power');
