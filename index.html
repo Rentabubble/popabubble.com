@@ -5,7 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FNAE: Five Nights at Epstein's</title>
     <style>
-        body { background: black; color: lime; font-family: monospace; text-align: center; margin: 0; padding: 20px; overflow: hidden; transition: all 0.3s; }
+        body {
+            background: black;
+            color: lime;
+            font-family: monospace;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
         h1 { font-size: 2.2em; margin-bottom: 15px; text-shadow: 0 0 10px red; }
         #clock { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); font-size: 2em; color: lime; text-shadow: 0 0 10px lime; z-index: 100; }
         #power-bar { position: fixed; top: 60px; right: 10px; width: 200px; height: 20px; background: #111; border: 2px solid lime; z-index: 100; }
@@ -19,7 +28,11 @@
         #base-view img, #camera-image { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%) sepia(0.1) brightness(0.7) contrast(1.3); transition: filter 0.3s; }
         #base-view { display: block; }
         #monitor { display: none; }
-        #doors-btn, #toggle-btn { position: absolute; left: 50%; transform: translateX(-50%); background: #001100; color: lime; border: 3px solid lime; font-family: monospace; cursor: pointer; transition: all 0.3s; z-index: 20; }
+        #doors-btn, #toggle-btn {
+            position: absolute; left: 50%; transform: translateX(-50%);
+            background: #001100; color: lime; border: 3px solid lime; font-family: monospace;
+            cursor: pointer; transition: all 0.3s; z-index: 20;
+        }
         #doors-btn { bottom: 80px; padding: 15px 40px; font-size: 1.8em; }
         #toggle-btn { bottom: 20px; padding: 15px 30px; font-size: 1.5em; }
         #doors-btn:hover:not(.disabled), #toggle-btn:hover:not(.disabled) { background: #003300; box-shadow: 0 0 20px lime; }
@@ -38,7 +51,7 @@
         #game-win { color: lime; }
         #restart-btn { margin-top: 30px; padding: 20px 50px; font-size: 1.5em; background: lime; color: black; border: none; border-radius: 10px; cursor: pointer; }
         #low-power-audio { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
-        .animatronic { position: absolute; bottom: 15%; height: 55%; transition: left 8s linear; z-index: 25; opacity: 0.85; pointer-events: none; }
+        .animatronic { position: absolute; bottom: 15%; height: 55%; transition: left 0.4s ease-out, transform 0.3s, filter 0.3s; z-index: 25; opacity: 0.9; pointer-events: none; }
     </style>
 </head>
 <body>
@@ -143,7 +156,8 @@
         const CAMERA_DRAIN_RATE = 0.25;
         const ANIM_APPEAR_DELAY_MIN = 15000;
         const ANIM_APPEAR_DELAY_MAX = 50000;
-        const ANIM_RUN_DELAY = 4000 + Math.random() * 4000;
+        const ANIM_RUN_DELAY_MIN = 3000;
+        const ANIM_RUN_DELAY_MAX = 7000;
         const RUN_AWAY_TIME = 10000;
 
         cameras.forEach((cam, idx) => {
@@ -254,12 +268,13 @@
             currentAnim.style.left = '10%';
             monitor.appendChild(currentAnim);
 
+            const runDelay = ANIM_RUN_DELAY_MIN + Math.random() * (ANIM_RUN_DELAY_MAX - ANIM_RUN_DELAY_MIN);
             setTimeout(() => {
                 if (currentAnim && !doorsClosed && !isGameOver) {
                     currentAnim.style.left = '120%';
                     triggerRunAwayWarning();
                 }
-            }, ANIM_RUN_DELAY);
+            }, runDelay);
 
             scheduleAnimAppearance();
         }
@@ -284,12 +299,13 @@
         function jumpscarePlayer() {
             urgentOverlay.style.display = 'none';
             if (currentAnim) {
-                currentAnim.style.transition = 'all 0.3s';
+                currentAnim.style.transition = 'all 0.4s';
                 currentAnim.style.left = '50%';
                 currentAnim.style.bottom = '0';
                 currentAnim.style.height = '100%';
-                currentAnim.style.transform = 'scale(1.5)';
-                currentAnim.style.filter = 'brightness(2) contrast(2)';
+                currentAnim.style.transform = 'scale(1.6)';
+                currentAnim.style.filter = 'brightness(3) contrast(2.5) saturate(2)';
+                currentAnim.style.zIndex = '300';
             }
             gameOverFunc();
         }
@@ -307,7 +323,7 @@
                 urgentOverlay.style.display = 'none';
                 if (countdownInterval) clearInterval(countdownInterval);
                 if (currentAnim) {
-                    currentAnim.style.transition = 'left 1s';
+                    currentAnim.style.transition = 'left 1.2s ease-in-out';
                     currentAnim.style.left = '10%';
                 }
                 playBang();
