@@ -18,14 +18,19 @@
         h1 { font-size: 2.2em; margin-bottom: 15px; text-shadow: 0 0 10px red; }
         #clock { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); font-size: 2em; color: lime; text-shadow: 0 0 10px lime; z-index: 100; }
         #power-bar { position: fixed; top: 60px; right: 10px; width: 200px; height: 20px; background: #111; border: 2px solid lime; z-index: 100; }
-        #power-fill { height: 100%; background: lime; width: 100%; transition: width 0.5s; }
+        #power-fill { height: 100%; background: lime; width: 100%; transition: width 0.5s, background 0.3s; }
         #power-text { color: lime; font-size: 0.9em; margin-top: 5px; }
         .low-power #power-fill { background: red; }
         .low-power #power-text { color: red; animation: blink 1s infinite; }
+        .surge #power-fill { animation: surge 1.5s; }
         @keyframes blink { 50% { opacity: 0.3; } }
+        @keyframes surge { 0%,100% { background: lime; } 50% { background: yellow; box-shadow: 0 0 30px yellow; } }
+        @keyframes glitch-shake { 0%,100% { transform: translate(0); } 20% { transform: translate(-3px,3px); } 40% { transform: translate(3px,-3px); } 60% { transform: translate(-2px,2px); } 80% { transform: translate(2px,-2px); } }
+        @keyframes glitch-flicker { 0%,100% { opacity: 1; } 10% { opacity: 0.4; } 30% { opacity: 0.8; filter: invert(1); } 50% { opacity: 0.3; } 70% { filter: hue-rotate(90deg); } }
         #game-area { position: relative; width: 90%; max-width: 900px; height: 500px; margin: 0 auto; border: 5px solid lime; overflow: hidden; background: #000; box-shadow: 0 0 20px red; }
         #base-view, #monitor { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
         #base-view img, #camera-image { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%) sepia(0.1) brightness(0.7) contrast(1.3); transition: filter 0.3s; }
+        #monitor.glitch #camera-image { animation: glitch-shake 0.4s, glitch-flicker 0.6s; }
         #base-view { display: block; }
         #monitor { display: none; }
         #doors-btn, #toggle-btn {
@@ -37,9 +42,13 @@
         #toggle-btn { bottom: 20px; padding: 15px 30px; font-size: 1.5em; }
         #doors-btn:hover:not(.disabled), #toggle-btn:hover:not(.disabled) { background: #003300; box-shadow: 0 0 20px lime; }
         .disabled { opacity: 0.5; cursor: not-allowed; }
-        #static-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://img.freepik.com/free-vector/white-black-grainy-noise-stipple-texture-background_1017-51837.jpg') repeat; opacity: 0.25; pointer-events: none; animation: static 0.05s infinite; z-index: 10; }
-        @keyframes static { 0% { background-position: 0 0; } 100% { background-position: 100px 100px; } }
-        #urgent-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,0,0,0.7); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 30; color: white; font-size: 3em; text-shadow: 0 0 10px black; }
+        #static-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><rect width="10" height="10" fill="%23000"/><circle cx="5" cy="5" r="1" fill="%23fff" fill-opacity="0.08"/></svg>') repeat;
+            opacity: 0.3; pointer-events: none; animation: static 0.08s infinite; z-index: 10;
+        }
+        @keyframes static { 0% { background-position: 0 0; } 100% { background-position: 20px 20px; } }
+        #urgent-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,0,0,0.75); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 30; color: white; font-size: 3em; text-shadow: 0 0 10px black; }
         #urgent-doors { background: #ff0000; color: white; border: 5px solid yellow; padding: 20px 50px; font-size: 2em; margin-top: 20px; cursor: pointer; }
         #timer-countdown { font-size: 4em; color: yellow; text-shadow: 0 0 20px red; }
         #camera-label { position: absolute; top: 10px; left: 10px; font-size: 1.8em; background: rgba(0,0,0,0.8); padding: 5px 10px; border-radius: 5px; text-shadow: 0 0 5px lime; z-index: 15; }
@@ -47,11 +56,12 @@
         button { background: #001100; color: lime; border: 2px solid lime; padding: 12px 24px; margin: 8px; cursor: pointer; font-family: monospace; font-size: 1.1em; transition: all 0.3s; }
         button:hover { background: #003300; box-shadow: 0 0 15px lime; }
         #status { margin-top: 10px; font-size: 1.2em; }
-        #game-over, #game-win { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); color: red; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 200; font-size: 3em; }
+        #game-over, #game-win { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 200; font-size: 3em; }
+        #game-over { color: red; }
         #game-win { color: lime; }
         #restart-btn { margin-top: 30px; padding: 20px 50px; font-size: 1.5em; background: lime; color: black; border: none; border-radius: 10px; cursor: pointer; }
         .animatronic { position: absolute; bottom: 10%; height: 65%; transition: left 0.5s linear, opacity 0.8s, filter 0.5s; z-index: 25; pointer-events: none; opacity: 0.35; filter: brightness(0.7) grayscale(80%); }
-        .animatronic.active { opacity: 0.9; filter: brightness(1.2) grayscale(0%); transition: left 0.4s linear; }
+        .animatronic.active { opacity: 0.92; filter: brightness(1.3) grayscale(0%); transition: left 0.42s linear; }
     </style>
 </head>
 <body>
@@ -61,12 +71,12 @@
     <div id="power-text">POWER: 100%</div>
     <div id="game-area">
         <div id="base-view">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/58/EFTA00002940-Temple_-_Blue-and-white_striped_building_with_a_red-and-white_labyrinth_in_front_set_against_a_tropical_backdrop_of_palm_trees_and_the_ocean_under_a_bright_sky.jpg" alt="Temple">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/58/EFTA00002940-Temple_-_Blue-and-white_striped_building_with_a_red-and-white_labyrinth_in_front_set_against_a_tropical_backdrop_of_palm_trees_and_the_ocean_under_a_bright_sky.jpg" alt="Temple" crossorigin="anonymous">
             <div id="base-label">BASE: Temple Overlook - Doors Open</div>
             <button id="doors-btn">CLOSE DOORS</button>
         </div>
         <div id="monitor">
-            <img id="camera-image" src="" alt="CCTV">
+            <img id="camera-image" src="" alt="CCTV" crossorigin="anonymous">
             <div id="static-overlay"></div>
             <div id="camera-label">CAM Loading...</div>
         </div>
@@ -109,28 +119,7 @@
             'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Bill_Clinton_with_Winnie_the_Pooh.jpg/800px-Bill_Clinton_with_Winnie_the_Pooh.jpg'
         ];
 
-        let activeAnims = []; // {img, camIndex, position, isActive}
-
-        const clockEl = document.getElementById('clock');
-        const powerFill = document.getElementById('power-fill');
-        const powerText = document.getElementById('power-text');
-        const baseView = document.getElementById('base-view');
-        const monitor = document.getElementById('monitor');
-        const toggleBtn = document.getElementById('toggle-btn');
-        const doorsBtn = document.getElementById('doors-btn');
-        const buttonsDiv = document.getElementById('buttons');
-        const cameraImage = document.getElementById('camera-image');
-        const cameraLabel = document.getElementById('camera-label');
-        const baseLabel = document.getElementById('base-label');
-        const status = document.getElementById('status');
-        const gameOver = document.getElementById('game-over');
-        const gameWin = document.getElementById('game-win');
-        const winTitle = document.getElementById('win-title');
-        const restartBtn = document.getElementById('restart-btn');
-        const urgentOverlay = document.getElementById('urgent-overlay');
-        const timerCountdown = document.getElementById('timer-countdown');
-        const urgentDoorsBtn = document.getElementById('urgent-doors');
-
+        let activeAnims = [];
         let currentNight = 1;
         let isGameOver = false;
         let nightStartTime;
@@ -139,26 +128,29 @@
         let doorsClosed = false;
         let canToggleDoors = true;
         let currentCam = 0;
-        let powerDrainInterval, clockInterval;
+        let powerDrainInterval, clockInterval, eventInterval;
         let lowPowerTriggered = false;
         let countdownInterval = null;
         let warningAnim = null;
+        let surgeActive = false;
 
-        const SECONDS_PER_GAME_HOUR = 40;   // faster pace
-        const CAMERA_DRAIN = 0.35;
-        const DOORS_DRAIN = 1.4;
-        const SPAWN_MIN = 8000;             // more frequent spawns
-        const SPAWN_MAX = 25000;
-        const ACTIVATE_MIN = 10000;         // time before a background one might activate
-        const ACTIVATE_MAX = 30000;
-        const MOVE_SPEED = 5000;            // faster cross-screen
+        const SECONDS_PER_GAME_HOUR = 40;
+        const CAMERA_DRAIN = 0.4;
+        const DOORS_DRAIN = 1.5;
+        const SPAWN_MIN = 6000;
+        const SPAWN_MAX = 18000;
+        const ACTIVATE_MIN = 8000;
+        const ACTIVATE_MAX = 22000;
+        const MOVE_SPEED = 4500;
         const WARNING_TIME = 10000;
+        const GLITCH_CHANCE = 0.25; // 25% chance on cam switch
+        const SURGE_CHANCE = 0.08;  // ~every 12-15 sec average
 
         cameras.forEach((cam, i) => {
             const btn = document.createElement('button');
             btn.textContent = cam.name;
             btn.onclick = () => switchCam(i);
-            buttonsDiv.appendChild(btn);
+            document.getElementById('buttons').appendChild(btn);
         });
 
         function initNight() {
@@ -169,36 +161,40 @@
             currentCam = 0;
             isGameOver = false;
             lowPowerTriggered = false;
+            surgeActive = false;
             nightStartTime = Date.now();
             activeAnims.forEach(a => a.img?.remove());
             activeAnims = [];
             if (warningAnim) warningAnim.remove();
             warningAnim = null;
             updatePower();
-            document.body.classList.remove('low-power');
-            gameOver.style.display = 'none';
-            gameWin.style.display = 'none';
-            urgentOverlay.style.display = 'none';
+            document.body.classList.remove('low-power', 'surge');
+            document.getElementById('game-over').style.display = 'none';
+            document.getElementById('game-win').style.display = 'none';
+            document.getElementById('urgent-overlay').style.display = 'none';
             closeCameras();
             clearInterval(powerDrainInterval);
             clearInterval(clockInterval);
+            clearInterval(eventInterval);
             if (countdownInterval) clearInterval(countdownInterval);
             clockInterval = setInterval(updateClock, 1000);
+            eventInterval = setInterval(randomEvent, 8000);
             updateClock();
             document.querySelector('h1').textContent = `FNAE: Five Nights at Epstein's - Night ${currentNight}`;
-            winTitle.textContent = `NIGHT ${currentNight} COMPLETE!`;
-            restartBtn.textContent = currentNight >= 5 ? 'YOU WON THE GAME!' : 'NEXT NIGHT';
-            doorsBtn.textContent = 'CLOSE DOORS';
-            doorsBtn.classList.remove('disabled');
-            toggleBtn.classList.remove('disabled');
-            status.textContent = 'Doors Open - Temple Secure';
-            baseLabel.textContent = 'BASE: Temple Overlook - Doors Open';
+            document.getElementById('win-title').textContent = `NIGHT ${currentNight} COMPLETE!`;
+            document.getElementById('restart-btn').textContent = currentNight >= 5 ? 'YOU WON THE GAME!' : 'NEXT NIGHT';
+            document.getElementById('doors-btn').textContent = 'CLOSE DOORS';
+            document.getElementById('doors-btn').classList.remove('disabled');
+            document.getElementById('toggle-btn').classList.remove('disabled');
+            document.getElementById('status').textContent = 'Doors Open - Temple Secure';
+            document.getElementById('base-label').textContent = 'BASE: Temple Overlook - Doors Open';
             scheduleNextSpawn();
         }
 
         function updatePower() {
-            powerFill.style.width = Math.max(power, 0) + '%';
-            powerText.textContent = `POWER: ${Math.floor(power)}%`;
+            const fill = document.getElementById('power-fill');
+            fill.style.width = Math.max(power, 0) + '%';
+            document.getElementById('power-text').textContent = `POWER: ${Math.floor(power)}%`;
             if (power <= 20 && !lowPowerTriggered) {
                 document.body.classList.add('low-power');
                 lowPowerTriggered = true;
@@ -210,7 +206,8 @@
 
         function drainPower() {
             let drain = (isCamerasOpen ? CAMERA_DRAIN : 0) + (doorsClosed ? DOORS_DRAIN : 0);
-            power = Math.max(0, power - drain);
+            if (surgeActive) drain *= -2; // surge recovers power
+            power = Math.max(0, Math.min(100, power - drain));
             updatePower();
         }
 
@@ -218,17 +215,37 @@
             const elapsed = (Date.now() - nightStartTime) / 1000;
             const gameHours = elapsed / SECONDS_PER_GAME_HOUR;
             if (gameHours >= 6) return winNight();
-
             const hour = 12 + Math.floor(gameHours);
             const min = Math.floor((gameHours % 1) * 60);
-            clockEl.textContent = `${hour % 12 || 12}:${min.toString().padStart(2, '0')} AM`;
+            document.getElementById('clock').textContent = `${hour % 12 || 12}:${min.toString().padStart(2, '0')} AM`;
         }
 
         function switchCam(idx) {
             if (isGameOver || doorsClosed) return;
             currentCam = idx;
-            cameraImage.src = cameras[idx].url;
-            cameraLabel.textContent = cameras[idx].name;
+            document.getElementById('camera-image').src = cameras[idx].url;
+            document.getElementById('camera-label').textContent = cameras[idx].name;
+            if (Math.random() < GLITCH_CHANCE) triggerGlitch();
+        }
+
+        function triggerGlitch() {
+            const mon = document.getElementById('monitor');
+            mon.classList.add('glitch');
+            setTimeout(() => mon.classList.remove('glitch'), 1200);
+        }
+
+        function randomEvent() {
+            if (isGameOver) return;
+            if (Math.random() < SURGE_CHANCE) {
+                surgeActive = true;
+                document.body.classList.add('surge');
+                power = Math.min(100, power + 25 + Math.random() * 25);
+                updatePower();
+                setTimeout(() => {
+                    surgeActive = false;
+                    document.body.classList.remove('surge');
+                }, 4000);
+            }
         }
 
         function scheduleNextSpawn() {
@@ -239,23 +256,17 @@
 
         function spawnBackgroundAnim() {
             if (isGameOver) return;
-
             const camIdx = Math.floor(Math.random() * cameras.length);
             const enemySrc = enemies[Math.floor(Math.random() * enemies.length)];
-
             const img = document.createElement('img');
             img.src = enemySrc;
             img.className = 'animatronic';
-            img.style.left = (Math.random() * 60 + 10) + '%';  // random background position
-            monitor.appendChild(img);
-
+            img.style.left = (Math.random() * 70 + 10) + '%';
+            document.getElementById('monitor').appendChild(img);
             const animObj = { img, camIndex: camIdx, position: parseFloat(img.style.left), isActive: false };
             activeAnims.push(animObj);
-
-            // Schedule possible activation
             const activateDelay = ACTIVATE_MIN + Math.random() * (ACTIVATE_MAX - ACTIVATE_MIN);
             setTimeout(() => activateAnim(animObj), activateDelay);
-
             scheduleNextSpawn();
         }
 
@@ -263,17 +274,14 @@
             if (isGameOver || animObj.isActive || !animObj.img.parentNode) return;
             animObj.isActive = true;
             animObj.img.classList.add('active');
-            animObj.img.style.left = '-15%';  // reset to left for run
+            animObj.img.style.left = '-15%';
             animObj.position = -15;
-
-            // Start moving to right
             setTimeout(() => {
                 if (animObj.img.parentNode && animObj.isActive) {
                     animObj.img.style.left = '115%';
                 }
-            }, 300);
-
-            const moveEndTime = setTimeout(() => {
+            }, 200);
+            setTimeout(() => {
                 if (animObj.img.parentNode && animObj.isActive) {
                     if (!doorsClosed) {
                         triggerWarning(animObj.img, animObj);
@@ -281,39 +289,30 @@
                         resetAnim(animObj);
                     }
                 }
-            }, MOVE_SPEED + 300);
-
-            // Chance to reactivate soon after reset (more frequent threats)
-            setTimeout(() => {
-                if (!isGameOver && animObj.img.parentNode && !animObj.isActive) {
-                    activateAnim(animObj);
-                }
-            }, 12000 + Math.random() * 18000);
+            }, MOVE_SPEED + 200);
         }
 
         function resetAnim(animObj) {
             if (!animObj.img.parentNode) return;
             animObj.isActive = false;
             animObj.img.classList.remove('active');
-            animObj.img.style.transition = 'left 1.2s ease-out, opacity 1s';
-            animObj.img.style.left = (Math.random() * 60 + 10) + '%';
+            animObj.img.style.transition = 'left 1.3s ease-out, opacity 1s';
+            animObj.img.style.left = (Math.random() * 70 + 10) + '%';
             animObj.position = parseFloat(animObj.img.style.left);
         }
 
         function triggerWarning(targetImg, targetObj) {
-            if (urgentOverlay.style.display === 'flex') return;
-
+            if (document.getElementById('urgent-overlay').style.display === 'flex') return;
             warningAnim = targetImg;
-            urgentOverlay.style.display = 'flex';
+            document.getElementById('urgent-overlay').style.display = 'flex';
             let timeLeft = 10;
-            timerCountdown.textContent = timeLeft;
-
+            document.getElementById('timer-countdown').textContent = timeLeft;
             countdownInterval = setInterval(() => {
                 timeLeft--;
-                timerCountdown.textContent = timeLeft;
+                document.getElementById('timer-countdown').textContent = timeLeft;
                 if (timeLeft <= 0) {
                     clearInterval(countdownInterval);
-                    if (urgentOverlay.style.display === 'flex') {
+                    if (document.getElementById('urgent-overlay').style.display === 'flex') {
                         jumpscare(targetImg);
                     }
                 }
@@ -321,16 +320,15 @@
         }
 
         function jumpscare(targetImg) {
-            urgentOverlay.style.display = 'none';
+            document.getElementById('urgent-overlay').style.display = 'none';
             if (targetImg && targetImg.parentNode) {
-                targetImg.style.transition = 'all 0.4s';
-                targetImg.style.left = '50%';
-                targetImg.style.bottom = '0';
+                targetImg.style.transition = 'all 0.35s';
+                targetImg.style.left = '48%';
+                targetImg.style.bottom = '-5%';
                 targetImg.style.height = '110%';
-                targetImg.style.transform = 'scale(1.9)';
-                targetImg.style.filter = 'brightness(3) contrast(3) saturate(2.5)';
-                targetImg.style.zIndex = '400';
-                targetImg.classList.add('active');
+                targetImg.style.transform = 'scale(2)';
+                targetImg.style.filter = 'brightness(3) contrast(3.5) saturate(3)';
+                targetImg.style.zIndex = '500';
             }
             gameOverFunc();
         }
@@ -339,54 +337,51 @@
             if (!canToggleDoors || isGameOver) return;
             doorsClosed = true;
             canToggleDoors = false;
-            doorsBtn.textContent = 'OPEN DOORS';
-            doorsBtn.classList.add('disabled');
-            baseLabel.textContent = 'BASE: Temple Overlook - Doors Closed';
-            status.textContent = 'Doors Closed - Heavy Power Drain';
-
-            if (urgentOverlay.style.display === 'flex') {
-                urgentOverlay.style.display = 'none';
+            document.getElementById('doors-btn').textContent = 'OPEN DOORS';
+            document.getElementById('doors-btn').classList.add('disabled');
+            document.getElementById('base-label').textContent = 'BASE: Temple Overlook - Doors Closed';
+            document.getElementById('status').textContent = 'Doors Closed - Heavy Power Drain';
+            if (document.getElementById('urgent-overlay').style.display === 'flex') {
+                document.getElementById('urgent-overlay').style.display = 'none';
                 if (countdownInterval) clearInterval(countdownInterval);
-
                 if (warningAnim) {
                     const obj = activeAnims.find(a => a.img === warningAnim);
                     if (obj) resetAnim(obj);
-                    status.textContent = 'Doors Closed - Threat Returned';
+                    document.getElementById('status').textContent = 'Doors Closed - Threat Returned';
                 }
             }
-
             setTimeout(() => {
                 canToggleDoors = true;
-                doorsBtn.classList.remove('disabled');
-            }, 9000);  // slightly shorter cooldown for more action
+                document.getElementById('doors-btn').classList.remove('disabled');
+            }, 8000);
         }
 
         function openDoorsAction() {
             if (!canToggleDoors || isGameOver) return;
             doorsClosed = false;
-            doorsBtn.textContent = 'CLOSE DOORS';
-            baseLabel.textContent = 'BASE: Temple Overlook - Doors Open';
-            status.textContent = isCamerasOpen ? 'Cameras Open - Monitoring...' : 'Doors Open - Temple Secure';
+            document.getElementById('doors-btn').textContent = 'CLOSE DOORS';
+            document.getElementById('base-label').textContent = 'BASE: Temple Overlook - Doors Open';
+            document.getElementById('status').textContent = isCamerasOpen ? 'Cameras Open - Monitoring...' : 'Doors Open - Temple Secure';
         }
 
         function closeCameras() {
             isCamerasOpen = false;
-            baseView.style.display = 'block';
-            monitor.style.display = 'none';
-            toggleBtn.textContent = 'OPEN CAMERAS';
-            buttonsDiv.style.display = 'none';
-            status.textContent = doorsClosed ? 'Doors Closed - Heavy Drain' : 'Doors Open - Temple Secure';
+            document.getElementById('base-view').style.display = 'block';
+            document.getElementById('monitor').style.display = 'none';
+            document.getElementById('toggle-btn').textContent = 'OPEN CAMERAS';
+            document.getElementById('buttons').style.display = 'none';
+            document.getElementById('status').textContent = doorsClosed ? 'Doors Closed - Heavy Drain' : 'Doors Open - Temple Secure';
             clearInterval(powerDrainInterval);
         }
 
         function openCameras() {
             if (power <= 0 || isGameOver) return;
             isCamerasOpen = true;
-            baseView.style.display = 'none';
-            monitor.style.display = 'block';
-            toggleBtn.textContent = 'CLOSE CAMERAS';
-            buttonsDiv.style.display = 'flex';
-            status.textContent = doorsClosed ? 'Doors Closed - Cams Active' : 'Cameras Open - Monitoring...';
+            document.getElementById('base-view').style.display = 'none';
+            document.getElementById('monitor').style.display = 'block';
+            document.getElementById('toggle-btn').textContent = 'CLOSE CAMERAS';
+            document.getElementById('buttons').style.display = 'flex';
+            document.getElementById('status').textContent = doorsClosed ? 'Doors Closed - Cams Active' : 'Cameras Open - Monitoring...';
             powerDrainInterval = setInterval(drainPower, 1000);
             switchCam(currentCam);
         }
@@ -395,29 +390,30 @@
             isGameOver = true;
             clearInterval(powerDrainInterval);
             clearInterval(clockInterval);
+            clearInterval(eventInterval);
             if (countdownInterval) clearInterval(countdownInterval);
-            toggleBtn.classList.add('disabled');
-            doorsBtn.classList.add('disabled');
-            setTimeout(() => gameOver.style.display = 'flex', 1200);
+            document.getElementById('toggle-btn').classList.add('disabled');
+            document.getElementById('doors-btn').classList.add('disabled');
+            setTimeout(() => document.getElementById('game-over').style.display = 'flex', 1000);
         }
 
         function winNight() {
             isGameOver = true;
             clearInterval(powerDrainInterval);
             clearInterval(clockInterval);
+            clearInterval(eventInterval);
             if (countdownInterval) clearInterval(countdownInterval);
-            gameWin.style.display = 'flex';
+            document.getElementById('game-win').style.display = 'flex';
             if (currentNight >= 5) {
-                winTitle.textContent = 'YOU SURVIVED ALL 5 NIGHTS!';
-                restartBtn.textContent = 'PLAY AGAIN';
+                document.getElementById('win-title').textContent = 'YOU SURVIVED ALL 5 NIGHTS!';
+                document.getElementById('restart-btn').textContent = 'PLAY AGAIN';
             }
         }
 
-        toggleBtn.onclick = () => isGameOver ? null : (isCamerasOpen ? closeCameras() : openCameras());
-        doorsBtn.onclick = () => isGameOver ? null : (doorsClosed ? openDoorsAction() : closeDoorsAction());
-        urgentDoorsBtn.onclick = closeDoorsAction;
-
-        restartBtn.onclick = () => {
+        document.getElementById('toggle-btn').onclick = () => isGameOver ? null : (isCamerasOpen ? closeCameras() : openCameras());
+        document.getElementById('doors-btn').onclick = () => isGameOver ? null : (doorsClosed ? openDoorsAction() : closeDoorsAction());
+        document.getElementById('urgent-doors').onclick = closeDoorsAction;
+        document.getElementById('restart-btn').onclick = () => {
             currentNight = currentNight >= 5 ? 1 : currentNight + 1;
             initNight();
         };
