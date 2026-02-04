@@ -72,7 +72,7 @@
 
     <div id="game-over">
         <div>GAME OVER</div>
-        <div>THEY GOT AWAY...</div>
+        <div>THEY GOT YOU!</div>
         <button id="restart-btn">RESTART NIGHT</button>
     </div>
 
@@ -96,17 +96,15 @@
             { name: 'CAM06 - Dental Room', url: 'https://s.abcnews.com/images/US/epstein-house-2-rt-jef-251203_1764792198354_hpMain_2_16x9_1600.jpg' }
         ];
 
-        // Your exact images (resized/optimized links for better loading)
         const animatronics = [
-            'https://i.imgur.com/1nYqZ3r.jpeg', // Winnie Pooh + Epstein vibe
-            'https://i.imgur.com/5dXjP0L.jpeg', // Epstein in jacket
+            'https://i.imgur.com/1nYqZ3r.jpeg',
+            'https://i.imgur.com/5dXjP0L.jpeg',
             'https://upload.wikimedia.org/wikipedia/commons/d/d3/Bill_Clinton.jpg',
             'https://upload.wikimedia.org/wikipedia/commons/5/56/Donald_Trump_official_portrait.jpg',
             'https://upload.wikimedia.org/wikipedia/commons/a/a0/Bill_Gates_2018.jpg',
             'https://upload.wikimedia.org/wikipedia/commons/0/08/Ghislaine_Maxwell_%28cropped%29.jpg'
         ];
 
-        // DOM elements
         const clockEl = document.getElementById('clock');
         const powerFill = document.getElementById('power-fill');
         const powerText = document.getElementById('power-text');
@@ -127,7 +125,6 @@
         const timerCountdown = document.getElementById('timer-countdown');
         const lowPowerAudio = document.getElementById('low-power-audio');
 
-        // State
         let currentNight = 1;
         let isGameOver = false;
         let nightStartTime;
@@ -143,10 +140,10 @@
 
         const NO_CAM_DEATH_DELAY = 20000;
         const SECONDS_PER_GAME_HOUR = 40;
-        const CAMERA_DRAIN_RATE = 0.25; // was 0.5 → reduced 2x
-        const ANIM_APPEAR_DELAY_MIN = 20000;
-        const ANIM_APPEAR_DELAY_MAX = 60000;
-        const ANIM_RUN_DELAY = 5000; // time before they start running after appearing
+        const CAMERA_DRAIN_RATE = 0.25;
+        const ANIM_APPEAR_DELAY_MIN = 15000;
+        const ANIM_APPEAR_DELAY_MAX = 50000;
+        const ANIM_RUN_DELAY = 4000 + Math.random() * 4000;
         const RUN_AWAY_TIME = 10000;
 
         cameras.forEach((cam, idx) => {
@@ -191,7 +188,7 @@
             status.textContent = 'Doors Open - Temple Secure';
             baseLabel.textContent = 'BASE: Temple Overlook - Doors Open';
 
-            scheduleAnimAppearance(); // start the silent animatronic spawns
+            scheduleAnimAppearance();
         }
 
         function clearAllTimers() {
@@ -210,7 +207,7 @@
             if (power <= 20) {
                 document.body.classList.add('low-power');
                 if (!lowPowerTriggered) {
-                    lowPowerAudio.play().catch(() => console.log("Autoplay blocked"));
+                    lowPowerAudio.play().catch(() => {});
                     lowPowerTriggered = true;
                 }
             } else {
@@ -250,16 +247,13 @@
         function spawnAnim() {
             if (isGameOver) return;
 
-            // Spawn even if cameras closed
-            const targetMonitor = monitor; // always spawn in monitor layer
             if (currentAnim) currentAnim.remove();
             currentAnim = document.createElement('img');
             currentAnim.src = animatronics[Math.floor(Math.random() * animatronics.length)];
             currentAnim.className = 'animatronic';
             currentAnim.style.left = '10%';
-            targetMonitor.appendChild(currentAnim);
+            monitor.appendChild(currentAnim);
 
-            // After delay, start running
             setTimeout(() => {
                 if (currentAnim && !doorsClosed && !isGameOver) {
                     currentAnim.style.left = '120%';
@@ -267,7 +261,6 @@
                 }
             }, ANIM_RUN_DELAY);
 
-            // Schedule next spawn
             scheduleAnimAppearance();
         }
 
@@ -281,9 +274,24 @@
                 timerCountdown.textContent = timeLeft;
                 if (timeLeft <= 0) {
                     clearInterval(countdownInterval);
-                    if (urgentOverlay.style.display === 'flex') gameOverFunc();
+                    if (urgentOverlay.style.display === 'flex') {
+                        jumpscarePlayer();
+                    }
                 }
             }, 1000);
+        }
+
+        function jumpscarePlayer() {
+            urgentOverlay.style.display = 'none';
+            if (currentAnim) {
+                currentAnim.style.transition = 'all 0.3s';
+                currentAnim.style.left = '50%';
+                currentAnim.style.bottom = '0';
+                currentAnim.style.height = '100%';
+                currentAnim.style.transform = 'scale(1.5)';
+                currentAnim.style.filter = 'brightness(2) contrast(2)';
+            }
+            gameOverFunc();
         }
 
         function closeDoors() {
@@ -299,12 +307,11 @@
                 urgentOverlay.style.display = 'none';
                 if (countdownInterval) clearInterval(countdownInterval);
                 if (currentAnim) {
-                    currentAnim.style.transition = 'left 0.8s';
-                    currentAnim.style.left = '-30%';
-                    setTimeout(() => { if (currentAnim) currentAnim.remove(); }, 900);
+                    currentAnim.style.transition = 'left 1s';
+                    currentAnim.style.left = '10%';
                 }
                 playBang();
-                status.textContent = 'Doors Closed - They Didn\'t Get Away';
+                status.textContent = 'Doors Closed - They Returned';
             }
 
             doorTimerId = setTimeout(() => {
@@ -399,7 +406,6 @@
             initNight();
         };
 
-        // Start game
         initNight();
     </script>
 </body>
