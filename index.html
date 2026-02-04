@@ -50,7 +50,8 @@
         #game-over, #game-win { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); color: red; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 200; font-size: 3em; }
         #game-win { color: lime; }
         #restart-btn { margin-top: 30px; padding: 20px 50px; font-size: 1.5em; background: lime; color: black; border: none; border-radius: 10px; cursor: pointer; }
-        .animatronic { position: absolute; bottom: 10%; height: 70%; transition: left 0.6s linear; z-index: 25; pointer-events: none; }
+        .animatronic { position: absolute; bottom: 10%; height: 65%; transition: left 0.5s linear, opacity 0.8s, filter 0.5s; z-index: 25; pointer-events: none; opacity: 0.35; filter: brightness(0.7) grayscale(80%); }
+        .animatronic.active { opacity: 0.9; filter: brightness(1.2) grayscale(0%); transition: left 0.4s linear; }
     </style>
 </head>
 <body>
@@ -71,7 +72,7 @@
         </div>
         <button id="toggle-btn">OPEN CAMERAS</button>
         <div id="urgent-overlay">
-            <div>THEY'RE COMING!</div>
+            <div>THEY'RE RUNNING!</div>
             <div>CLOSE DOORS IN</div>
             <div id="timer-countdown">10</div>
             <button id="urgent-doors">CLOSE DOORS NOW!</button>
@@ -105,10 +106,10 @@
             'https://upload.wikimedia.org/wikipedia/commons/5/56/Donald_Trump_official_portrait.jpg',
             'https://upload.wikimedia.org/wikipedia/commons/a/a0/Bill_Gates_2018.jpg',
             'https://upload.wikimedia.org/wikipedia/commons/0/08/Ghislaine_Maxwell_%28cropped%29.jpg',
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Bill_Clinton_with_Winnie_the_Pooh.jpg/800px-Bill_Clinton_with_Winnie_the_Pooh.jpg'  // the Pooh one
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Bill_Clinton_with_Winnie_the_Pooh.jpg/800px-Bill_Clinton_with_Winnie_the_Pooh.jpg'
         ];
 
-        let activeAnims = []; // array of {imgElement, camIndex, position}
+        let activeAnims = []; // {img, camIndex, position, isActive}
 
         const clockEl = document.getElementById('clock');
         const powerFill = document.getElementById('power-fill');
@@ -143,12 +144,14 @@
         let countdownInterval = null;
         let warningAnim = null;
 
-        const SECONDS_PER_GAME_HOUR = 45;   // faster night
-        const CAMERA_DRAIN = 0.3;
-        const DOORS_DRAIN = 1.2;
-        const SPAWN_MIN = 12000;
-        const SPAWN_MAX = 45000;
-        const MOVE_SPEED = 7000;           // time to cross screen
+        const SECONDS_PER_GAME_HOUR = 40;   // faster pace
+        const CAMERA_DRAIN = 0.35;
+        const DOORS_DRAIN = 1.4;
+        const SPAWN_MIN = 8000;             // more frequent spawns
+        const SPAWN_MAX = 25000;
+        const ACTIVATE_MIN = 10000;         // time before a background one might activate
+        const ACTIVATE_MAX = 30000;
+        const MOVE_SPEED = 5000;            // faster cross-screen
         const WARNING_TIME = 10000;
 
         cameras.forEach((cam, i) => {
@@ -231,10 +234,10 @@
         function scheduleNextSpawn() {
             if (isGameOver) return;
             const delay = SPAWN_MIN + Math.random() * (SPAWN_MAX - SPAWN_MIN);
-            setTimeout(spawnAnimatronic, delay);
+            setTimeout(spawnBackgroundAnim, delay);
         }
 
-        function spawnAnimatronic() {
+        function spawnBackgroundAnim() {
             if (isGameOver) return;
 
             const camIdx = Math.floor(Math.random() * cameras.length);
@@ -243,44 +246,64 @@
             const img = document.createElement('img');
             img.src = enemySrc;
             img.className = 'animatronic';
-            img.style.left = '-20%';
-            img.style.opacity = '0.85';
+            img.style.left = (Math.random() * 60 + 10) + '%';  // random background position
             monitor.appendChild(img);
 
-            activeAnims.push({ img, camIndex: camIdx, position: -20 });
+            const animObj = { img, camIndex: camIdx, position: parseFloat(img.style.left), isActive: false };
+            activeAnims.push(animObj);
 
-            // Start moving immediately
-            setTimeout(() => {
-                if (!isGameOver && img.parentNode) {
-                    img.style.left = '120%';
-                    img.dataset.moving = 'true';
-                }
-            }, 800);
-
-            // Check when it reaches the end
-            const moveEnd = setTimeout(() => {
-                if (img.parentNode && img.dataset.moving === 'true') {
-                    if (!doorsClosed) {
-                        triggerWarning(img);
-                    } else {
-                        // Doors were closed → reset this one
-                        img.style.transition = 'left 1.2s ease-out';
-                        img.style.left = '-20%';
-                        setTimeout(() => {
-                            if (img.parentNode) img.remove();
-                            activeAnims = activeAnims.filter(a => a.img !== img);
-                        }, 1400);
-                    }
-                }
-            }, MOVE_SPEED + 800);
+            // Schedule possible activation
+            const activateDelay = ACTIVATE_MIN + Math.random() * (ACTIVATE_MAX - ACTIVATE_MIN);
+            setTimeout(() => activateAnim(animObj), activateDelay);
 
             scheduleNextSpawn();
         }
 
-        function triggerWarning(jumpscareTarget) {
-            if (urgentOverlay.style.display === 'flex') return; // already warning
+        function activateAnim(animObj) {
+            if (isGameOver || animObj.isActive || !animObj.img.parentNode) return;
+            animObj.isActive = true;
+            animObj.img.classList.add('active');
+            animObj.img.style.left = '-15%';  // reset to left for run
+            animObj.position = -15;
 
-            warningAnim = jumpscareTarget;
+            // Start moving to right
+            setTimeout(() => {
+                if (animObj.img.parentNode && animObj.isActive) {
+                    animObj.img.style.left = '115%';
+                }
+            }, 300);
+
+            const moveEndTime = setTimeout(() => {
+                if (animObj.img.parentNode && animObj.isActive) {
+                    if (!doorsClosed) {
+                        triggerWarning(animObj.img, animObj);
+                    } else {
+                        resetAnim(animObj);
+                    }
+                }
+            }, MOVE_SPEED + 300);
+
+            // Chance to reactivate soon after reset (more frequent threats)
+            setTimeout(() => {
+                if (!isGameOver && animObj.img.parentNode && !animObj.isActive) {
+                    activateAnim(animObj);
+                }
+            }, 12000 + Math.random() * 18000);
+        }
+
+        function resetAnim(animObj) {
+            if (!animObj.img.parentNode) return;
+            animObj.isActive = false;
+            animObj.img.classList.remove('active');
+            animObj.img.style.transition = 'left 1.2s ease-out, opacity 1s';
+            animObj.img.style.left = (Math.random() * 60 + 10) + '%';
+            animObj.position = parseFloat(animObj.img.style.left);
+        }
+
+        function triggerWarning(targetImg, targetObj) {
+            if (urgentOverlay.style.display === 'flex') return;
+
+            warningAnim = targetImg;
             urgentOverlay.style.display = 'flex';
             let timeLeft = 10;
             timerCountdown.textContent = timeLeft;
@@ -291,7 +314,7 @@
                 if (timeLeft <= 0) {
                     clearInterval(countdownInterval);
                     if (urgentOverlay.style.display === 'flex') {
-                        jumpscare(jumpscareTarget);
+                        jumpscare(targetImg);
                     }
                 }
             }, 1000);
@@ -300,13 +323,14 @@
         function jumpscare(targetImg) {
             urgentOverlay.style.display = 'none';
             if (targetImg && targetImg.parentNode) {
-                targetImg.style.transition = 'all 0.35s';
+                targetImg.style.transition = 'all 0.4s';
                 targetImg.style.left = '50%';
                 targetImg.style.bottom = '0';
-                targetImg.style.height = '100%';
-                targetImg.style.transform = 'scale(1.8)';
-                targetImg.style.filter = 'brightness(2.5) contrast(2.8) saturate(2.2)';
+                targetImg.style.height = '110%';
+                targetImg.style.transform = 'scale(1.9)';
+                targetImg.style.filter = 'brightness(3) contrast(3) saturate(2.5)';
                 targetImg.style.zIndex = '400';
+                targetImg.classList.add('active');
             }
             gameOverFunc();
         }
@@ -320,29 +344,21 @@
             baseLabel.textContent = 'BASE: Temple Overlook - Doors Closed';
             status.textContent = 'Doors Closed - Heavy Power Drain';
 
-            // Handle current warning
             if (urgentOverlay.style.display === 'flex') {
                 urgentOverlay.style.display = 'none';
                 if (countdownInterval) clearInterval(countdownInterval);
 
                 if (warningAnim) {
-                    warningAnim.style.transition = 'left 1.4s ease-out';
-                    warningAnim.style.left = '-20%';
-                    setTimeout(() => {
-                        if (warningAnim && warningAnim.parentNode) {
-                            warningAnim.remove();
-                            activeAnims = activeAnims.filter(a => a.img !== warningAnim);
-                        }
-                        warningAnim = null;
-                    }, 1600);
+                    const obj = activeAnims.find(a => a.img === warningAnim);
+                    if (obj) resetAnim(obj);
+                    status.textContent = 'Doors Closed - Threat Returned';
                 }
-                status.textContent = 'Doors Closed - Threat Neutralized';
             }
 
             setTimeout(() => {
                 canToggleDoors = true;
                 doorsBtn.classList.remove('disabled');
-            }, 10000);
+            }, 9000);  // slightly shorter cooldown for more action
         }
 
         function openDoorsAction() {
