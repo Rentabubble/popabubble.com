@@ -40,9 +40,8 @@
         #game-over { color: red; }
         #game-win { color: lime; }
         #restart-btn { margin-top: 30px; padding: 20px 50px; font-size: 1.5em; background: lime; color: black; border: none; border-radius: 10px; cursor: pointer; }
-        .animatronic { position: absolute; bottom: 10%; height: 65%; transition: left 0.5s linear, opacity 0.8s, filter 0.5s; z-index: 25; pointer-events: none; opacity: 0.35; filter: brightness(0.7) grayscale(80%); display: none; }
+        .animatronic { position: absolute; bottom: 10%; height: 65%; transition: left 0.5s linear, opacity 0.8s, filter 0.5s; z-index: 25; pointer-events: none; opacity: 0.35; filter: brightness(0.7) grayscale(80%); display: none; background: #000; }
         .animatronic.active { opacity: 0.92; filter: brightness(1.3) grayscale(0%); transition: left 0.42s linear; }
-        #enemy-background { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 24; display: none; pointer-events: none; }
     </style>
 </head>
 <body>
@@ -52,20 +51,19 @@
     <div id="power-text">POWER: 100%</div>
     <div id="game-area">
         <div id="base-view">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/58/EFTA00002940-Temple_-_Blue-and-white_striped_building_with_a_red-and-white_labyrinth_in_front_set_against_a_tropical_backdrop_of_palm_trees_and_the_ocean_under_a_bright_sky.jpg" alt="Temple">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/58/EFTA00002940-Temple_-_Blue-and-white_striped_building_with_a_red-and-white_labyrinth_in_front_set_against_a_tropical_backdrop_of_palm_trees_and_the_ocean_under_a_bright_sky.jpg" alt="Temple" crossorigin="anonymous">
             <div id="base-label">BASE: Temple Overlook - Doors Open</div>
             <button id="doors-btn">CLOSE DOORS</button>
         </div>
         <div id="monitor">
-            <img id="camera-image" src="" alt="CCTV">
-            <div id="enemy-background"></div>
+            <img id="camera-image" src="" alt="CCTV" crossorigin="anonymous">
             <div id="static-overlay"></div>
             <div id="camera-label">CAM Loading...</div>
         </div>
         <button id="toggle-btn">OPEN CAMERAS</button>
     </div>
     <div id="buttons"></div>
-    <div id="status">Temple Secure</div>
+    <div id="status">Doors Open - Temple Secure</div>
     <div id="game-over">
         <div>GAME OVER</div>
         <div>THEY GOT YOU!</div>
@@ -76,16 +74,25 @@
         <div>YOU SURVIVED!</div>
         <button id="restart-btn">NEXT NIGHT</button>
     </div>
+
     <script>
         const cameras = [
             { name: 'CAM01 - Temple Exterior', url: 'https://upload.wikimedia.org/wikipedia/commons/5/58/EFTA00002940-Temple_-_Blue-and-white_striped_building_with_a_red-and-white_labyrinth_in_front_set_against_a_tropical_backdrop_of_palm_trees_and_the_ocean_under_a_bright_sky.jpg' },
-            { name: 'CAM02 - Island Bedroom Interior', url: 'https://www.pbs.org/newshour/app/uploads/2025/12/epstein-bedroom.jpg' }, // bedroom from PBS release coverage
-            { name: 'CAM03 - Dental/Exam Room', url: 'https://media-cldnry.s-nbcnews.com/image/upload/t_fit-1500w,f_auto,q_auto:best/newscms/2025_49/epstein-dental-chair-masks.jpg' }, // dental chair + masks from NBC
-            { name: 'CAM04 - Interior Bedroom/Hallway', url: 'https://ichef.bbci.co.uk/news/976/cpsprodpb/12E2/production/_133940000_epstein_interior_bedroom.jpg' }, // bedroom/hall adj from BBC
-            { name: 'CAM05 - Pool & Cabana Area Interior', url: 'https://static01.nyt.com/images/2025/12/03/us/politics/epstein-pool-interior/epstein-pool-interior-superJumbo.jpg' }, // pool/living from NYT
-            { name: 'CAM06 - Interior Hallway/Structure', url: 'https://www.bbc.com/news/articles/c4g5rrlve33o/media/abc123xyz.jpg' } // hallway/bathroom structure from BBC (approx embed)
+            { name: 'CAM02 - Island Bedroom', url: '/images/2.jpeg' },
+            { name: 'CAM03 - Dental/Exam Room', url: '/images/3.jpeg' },
+            { name: 'CAM04 - Pool Area / Living Space', url: '/images/4.jpeg' },
+            { name: 'CAM05 - Interior Hallway', url: '/images/5.jpeg' },
+            { name: 'CAM06 - Beachfront Interior', url: '/images/6.jpeg' }
         ];
-        const enemyImage = 'https://upload.wikimedia.org/wikipedia/commons/5/56/Donald_Trump_official_portrait.jpg'; // All enemies are now Trump portrait
+
+        const enemies = [
+            'https://upload.wikimedia.org/wikipedia/commons/5/56/Donald_Trump_official_portrait.jpg',
+            'https://upload.wikimedia.org/wikipedia/commons/0/08/Ghislaine_Maxwell_%28cropped%29.jpg',
+            'https://upload.wikimedia.org/wikipedia/commons/d/d3/Bill_Clinton.jpg',
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Bill_Clinton_with_Winnie_the_Pooh.jpg/800px-Bill_Clinton_with_Winnie_the_Pooh.jpg',
+            'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgICAgICAgHBwcHCAoHBwcHBw8ICQcKFREWFhURExMYHSggGBolGxMTITEhMSkrLjouFx8zODMsNygtLisBCgoKDQ0NDw8NDysZFRkrKysrKystLSsrKysrKy0rKysrKys3KysrKysrKysrKysrKysrKysrKysrKysrKysrK//AABEIAQMAwgMBIgACEQEDEQH/xAAWAAEBAQAAAAAAAAAAAAAAAAAAAQf/xAAcEAEBAAIDAQEAAAAAAAAAAAAAATHwEYGRUUH/xAAVAQEBAAAAAAAAAAAAAAAAAAAAAf/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AMOFFUABBUQAAAABRRFE4QBQABQAAAAAA4DoAAAAAAAAAAAAAAAAAAAAAAAABdyIAAAAAAAAAAAAAAAAAAAAAAAAAAAigAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACKigAAAgCgCKAAAAAAAAAAAAAAAAAHIICpVABFAAAEUAAAAAAAAAAAAAAAABBQKi1ACCglCgCooAigAAAAAAAAAAAAAAigAAAACVQBFAAAAAAAAAAAAAAAAAAAAAAABFAAAAAAAAAAAAAAAAAAAAAAAAARQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADcgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACoAB0ACgIKgAAAoCBQAFBAABUBYgAAAAAAoIL4ABQAAEFQAUARQBFARRABQBFAQUARQE+KKB6G4BS5SgIQAD8SKAkUBQAAAQqACgCosARUAAigqKoIAKP//Z',
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYxO4gWuUz07BRakSf3JxYY28sMp1Fm7fxMgJOVDF6Mn9WPGynwEva_wCvmi5f5JNQcWSxI6mp&s'
+        ];
 
         let activeAnims = [];
         let currentNight = 1;
@@ -102,14 +109,13 @@
         const SECONDS_PER_GAME_HOUR = 40;
         const CAMERA_DRAIN = 0.4;
         const DOORS_DRAIN = 1.5;
-        const SPAWN_MIN = 6000;
-        const SPAWN_MAX = 18000;
-        const ACTIVATE_MIN = 8000;
-        const ACTIVATE_MAX = 22000;
+        const SPAWN_MIN = 12000;
+        const SPAWN_MAX = 45000;
+        const ACTIVATE_MIN = 10000;
+        const ACTIVATE_MAX = 30000;
         const MOVE_SPEED = 4500;
         const GLITCH_CHANCE = 0.25;
         const SURGE_CHANCE = 0.08;
-        const DOOR_COOLDOWN = 15000; // 15 seconds
 
         cameras.forEach((cam, i) => {
             const btn = document.createElement('button');
@@ -147,8 +153,7 @@
             document.getElementById('doors-btn').textContent = 'CLOSE DOORS';
             document.getElementById('doors-btn').classList.remove('disabled');
             document.getElementById('toggle-btn').classList.remove('disabled');
-            document.getElementById('status').textContent = 'Temple Secure';
-            document.getElementById('enemy-background').style.display = 'none';
+            document.getElementById('status').textContent = 'Doors Open - Temple Secure';
             scheduleNextSpawn();
         }
 
@@ -215,28 +220,31 @@
         function spawnAnim() {
             if (isGameOver) return;
             const assignedCam = Math.floor(Math.random() * cameras.length);
+            const src = enemies[Math.floor(Math.random() * enemies.length)];
             const img = document.createElement('img');
-            img.src = enemyImage; // Always Trump
+            img.src = src;
             img.className = 'animatronic';
             img.style.left = (Math.random() * 70 + 10) + '%';
+            img.onerror = () => { img.style.background = '#000'; img.src = ''; };
             document.getElementById('monitor').appendChild(img);
             const obj = { img, assignedCam, position: parseFloat(img.style.left), isActive: false };
             activeAnims.push(obj);
             const delay = ACTIVATE_MIN + Math.random() * (ACTIVATE_MAX - ACTIVATE_MIN);
-            setTimeout(() => activate(obj), delay);
+            obj.activationTimer = setTimeout(() => {
+                if (!doorsClosed) activate(obj);
+            }, delay);
             scheduleNextSpawn();
         }
 
         function activate(obj) {
-            if (isGameOver || obj.isActive || !obj.img.parentNode) return;
+            if (isGameOver || obj.isActive || !obj.img.parentNode || doorsClosed) return;
             obj.isActive = true;
             obj.img.classList.add('active');
-            document.getElementById('enemy-background').style.display = 'block';
             obj.img.style.left = '-15%';
             setTimeout(() => {
-                if (obj.img.parentNode && obj.isActive) obj.img.style.left = '115%';
+                if (obj.img.parentNode && obj.isActive && !doorsClosed) obj.img.style.left = '115%';
             }, 300);
-            setTimeout(() => {
+            obj.moveEndTimer = setTimeout(() => {
                 if (obj.img.parentNode && obj.isActive) {
                     if (!doorsClosed) {
                         jumpscare(obj.img);
@@ -245,17 +253,6 @@
                     }
                 }
             }, MOVE_SPEED + 300);
-        }
-
-        function reset(obj) {
-            if (!obj.img.parentNode) return;
-            obj.isActive = false;
-            obj.img.classList.remove('active');
-            obj.img.style.transition = 'left 1.2s ease-out';
-            obj.img.style.left = (Math.random() * 70 + 10) + '%';
-            if (!activeAnims.some(a => a.isActive)) {
-                document.getElementById('enemy-background').style.display = 'none';
-            }
         }
 
         function jumpscare(target) {
@@ -277,6 +274,16 @@
             setTimeout(() => document.getElementById('game-over').style.display = 'flex', 800);
         }
 
+        function reset(obj) {
+            if (!obj.img.parentNode) return;
+            obj.isActive = false;
+            obj.img.classList.remove('active');
+            obj.img.style.transition = 'left 1.2s ease-out';
+            obj.img.style.left = (Math.random() * 70 + 10) + '%';
+            clearTimeout(obj.activationTimer);
+            clearTimeout(obj.moveEndTimer);
+        }
+
         function closeDoorsAction() {
             if (!canToggleDoors || isGameOver) return;
             doorsClosed = true;
@@ -285,10 +292,19 @@
             document.getElementById('doors-btn').classList.add('disabled');
             document.getElementById('base-label').textContent = 'BASE: Temple Overlook - Doors Closed';
             document.getElementById('status').textContent = 'Doors Closed - Heavy Drain';
+            activeAnims.forEach(obj => {
+                clearTimeout(obj.activationTimer);
+                clearTimeout(obj.moveEndTimer);
+                if (obj.isActive) {
+                    obj.isActive = false;
+                    obj.img.classList.remove('active');
+                    obj.img.style.left = (Math.random() * 70 + 10) + '%';
+                }
+            });
             setTimeout(() => {
                 canToggleDoors = true;
                 document.getElementById('doors-btn').classList.remove('disabled');
-            }, DOOR_COOLDOWN);
+            }, 8000);
         }
 
         function openDoorsAction() {
@@ -296,7 +312,7 @@
             doorsClosed = false;
             document.getElementById('doors-btn').textContent = 'CLOSE DOORS';
             document.getElementById('base-label').textContent = 'BASE: Temple Overlook - Doors Open';
-            document.getElementById('status').textContent = isCamerasOpen ? 'Cameras Open - Monitoring...' : 'Temple Secure';
+            document.getElementById('status').textContent = isCamerasOpen ? 'Cameras Open - Monitoring...' : 'Doors Open - Temple Secure';
         }
 
         function closeCameras() {
@@ -305,8 +321,7 @@
             document.getElementById('monitor').style.display = 'none';
             document.getElementById('toggle-btn').textContent = 'OPEN CAMERAS';
             document.getElementById('buttons').style.display = 'none';
-            document.getElementById('status').textContent = doorsClosed ? 'Doors Closed - Heavy Drain' : 'Temple Secure';
-            document.getElementById('enemy-background').style.display = 'none';
+            document.getElementById('status').textContent = doorsClosed ? 'Doors Closed - Heavy Drain' : 'Doors Open - Temple Secure';
             clearInterval(powerDrainInterval);
         }
 
@@ -320,6 +335,16 @@
             document.getElementById('status').textContent = doorsClosed ? 'Doors Closed - Cams Active' : 'Cameras Open - Monitoring...';
             powerDrainInterval = setInterval(drainPower, 1000);
             switchCam(currentCam);
+        }
+
+        function gameOverFunc() {
+            isGameOver = true;
+            clearInterval(powerDrainInterval);
+            clearInterval(clockInterval);
+            clearInterval(eventInterval);
+            document.getElementById('toggle-btn').classList.add('disabled');
+            document.getElementById('doors-btn').classList.add('disabled');
+            setTimeout(() => document.getElementById('game-over').style.display = 'flex', 800);
         }
 
         function winNight() {
