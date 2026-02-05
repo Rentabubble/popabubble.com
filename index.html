@@ -42,7 +42,6 @@
         #restart-btn { margin-top: 30px; padding: 20px 50px; font-size: 1.5em; background: lime; color: black; border: none; border-radius: 10px; cursor: pointer; }
         .animatronic { position: absolute; bottom: 10%; height: 65%; transition: left 0.5s linear, opacity 0.8s, filter 0.5s; z-index: 25; pointer-events: none; opacity: 0.35; filter: brightness(0.7) grayscale(80%); display: none; background: #000; }
         .animatronic.active { opacity: 0.92; filter: brightness(1.3) grayscale(0%); transition: left 0.42s linear; }
-        .fallback-bg { background: #111 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="10" y="55" font-size="20" fill="lime">CAMERA OFFLINE</text></svg>') center/ contain; }
     </style>
 </head>
 <body>
@@ -52,12 +51,12 @@
     <div id="power-text">POWER: 100%</div>
     <div id="game-area">
         <div id="base-view">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/58/EFTA00002940-Temple_-_Blue-and-white_striped_building_with_a_red-and-white_labyrinth_in_front_set_against_a_tropical_backdrop_of_palm_trees_and_the_ocean_under_a_bright_sky.jpg" alt="Temple" onerror="this.classList.add('fallback-bg'); this.src='';">
-            <div id="base-label" style="position:absolute; bottom:10px; left:10px; background:rgba(0,0,0,0.7); padding:8px; border-radius:4px;">BASE: Temple Overlook - Doors Open</div>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/58/EFTA00002940-Temple_-_Blue-and-white_striped_building_with_a_red-and-white_labyrinth_in_front_set_against_a_tropical_backdrop_of_palm_trees_and_the_ocean_under_a_bright_sky.jpg" alt="Temple" crossorigin="anonymous">
+            <div id="base-label">BASE: Temple Overlook - Doors Open</div>
             <button id="doors-btn">CLOSE DOORS</button>
         </div>
         <div id="monitor">
-            <img id="camera-image" src="" alt="CCTV" class="fallback-bg" onerror="this.classList.add('fallback-bg'); this.src='';">
+            <img id="camera-image" src="" alt="CCTV" crossorigin="anonymous">
             <div id="static-overlay"></div>
             <div id="camera-label">CAM Loading...</div>
         </div>
@@ -91,7 +90,7 @@
             'https://upload.wikimedia.org/wikipedia/commons/0/08/Ghislaine_Maxwell_%28cropped%29.jpg',
             'https://upload.wikimedia.org/wikipedia/commons/d/d3/Bill_Clinton.jpg',
             'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Bill_Clinton_with_Winnie_the_Pooh.jpg/800px-Bill_Clinton_with_Winnie_the_Pooh.jpg',
-            'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgICAgICAgHBwcHCAoHBwcHBw8ICQcKFREWFhURExMYHSggGBolGxMTITEhMSkrLjouFx8zODMsNygtLisBCgoKDQ0NDw8NDysZFRkrKysrKystLSsrKysrKy0rKysrKys3KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrK//AABEIAQMAwgMBIgACEQEDEQH/xAAWAAEBAQAAAAAAAAAAAAAAAAAAAQf/xAAcEAEBAAIDAQEAAAAAAAAAAAAAATHwEYGRUUH/xAAVAQEBAAAAAAAAAAAAAAAAAAAAAf/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AMOFFUABBUQAAAABRRFE4QBQABQAAAAAA4DoAAAAAAAAAAAAAAAAAAAAAAAABdyIAAAAAAAAAAAAAAAAAAAAAAAAAAAigAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACKigAAAgCgCKAAAAAAAAAAAAAAAAAHIICpVABFAAAEUAAAAAAAAAAAAAAAABBQKi1ACCglCgCooAigAAAAAAAAAAAAAAigAAAACVQBFAAAAAAAAAAAAAAAAAAAAAAABFAAAAAAAAAAAAAAAAAAAAAAAAARQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADcgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACoAB0ACgIKgAAAoCBQAFBAABUBYgAAAAAAoIL4ABQAAEFQAUARQBFARRABQBFAQUARQE+KKB6G4BS5SgIQAD8SKAkUBQAAAQqACgCosARUAAigqKoIAKP//Z',
+            'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgICAgICAgHBwcHCAoHBwcHBw8ICQcKFREWFhURExMYHSggGBolGxMTITEhMSkrLjouFx8zODMsNygtLisBCgoKDQ0NDw8NDysZFRkrKysrKystLSsrKysrKy0rKysrKys3KysrKysrKysrKysrKysrKysrKysrKysrKysrK//AABEIAQMAwgMBIgACEQEDEQH/xAAWAAEBAQAAAAAAAAAAAAAAAAAAAQf/xAAcEAEBAAIDAQEAAAAAAAAAAAAAATHwEYGRUUH/xAAVAQEBAAAAAAAAAAAAAAAAAAAAAf/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AMOFFUABBUQAAAABRRFE4QBQABQAAAAAA4DoAAAAAAAAAAAAAAAAAAAAAAAABdyIAAAAAAAAAAAAAAAAAAAAAAAAAAAigAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACKigAAAgCgCKAAAAAAAAAAAAAAAAAHIICpVABFAAAEUAAAAAAAAAAAAAAAABBQKi1ACCglCgCooAigAAAAAAAAAAAAAAigAAAACVQBFAAAAAAAAAAAAAAAAAAAAAAABFAAAAAAAAAAAAAAAAAAAAAAAAARQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADcgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACoAB0ACgIKgAAAoCBQAFBAABUBYgAAAAAAoIL4ABQAAEFQAUARQBFARRABQBFAQUARQE+KKB6G4BS5SgIQAD8SKAkUBQAAAQqACgCosARUAAigqKoIAKP//Z',
             'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYxO4gWuUz07BRakSf3JxYY28sMp1Fm7fxMgJOVDF6Mn9WPGynwEva_wCvmi5f5JNQcWSxI6mp&s'
         ];
 
@@ -107,7 +106,6 @@
         let powerDrainInterval, clockInterval, eventInterval;
         let lowPowerTriggered = false;
         let surgeActive = false;
-
         const SECONDS_PER_GAME_HOUR = 40;
         const CAMERA_DRAIN = 0.4;
         const DOORS_DRAIN = 1.5;
@@ -372,3 +370,5 @@
     </script>
 </body>
 </html>
+
+
