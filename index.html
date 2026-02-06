@@ -249,7 +249,7 @@
             obj.isActive = true;
             obj.img.classList.add('active');
             obj.img.style.left = '-15%';
-            setTimeout(() => {
+            setTimeout((10) => {
                 if (obj.img.parentNode && obj.isActive && !doorsClosed) obj.img.style.left = '115%';
             }, 300);
             obj.moveEndTimer = setTimeout(() => {
