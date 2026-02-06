@@ -64,7 +64,7 @@
         <button id="toggle-btn">OPEN CAMERAS</button>
     </div>
     <div id="buttons"></div>
-    <div id="status">Doors Open - Watch out</div>
+    <div id="status">Doors Open - Temple Secure</div>
     <div id="game-over">
         <div>GAME OVER</div>
         <div>THEY GOT YOU!</div>
@@ -98,7 +98,6 @@
             'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Bill_Clinton_with_Winnie_the_Pooh.jpg/800px-Bill_Clinton_with_Winnie_the_Pooh.jpg',
             'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgICAgICAgHBwcHCAoHBwcHBw8ICQcKFREWFhURExMYHSggGBolGxMTITEhMSkrLjouFx8zODMsNygtLisBCgoKDQ0NDw8NDysZFRkrKysrKystLSsrKysrKy0rKysrKys3KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrK//AABEIAQMAwgMBIgACEQEDEQH/xAAWAAEBAQAAAAAAAAAAAAAAAAAAAQf/xAAcEAEBAAIDAQEAAAAAAAAAAAAAATHwEYGRUUH/xAAVAQEBAAAAAAAAAAAAAAAAAAAAAf/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AMOFFUABBUQAAAABRRFE4QBQABQAAAAAA4DoAAAAAAAAAAAAAAAAAAAAAAAABdyIAAAAAAAAAAAAAAAAAAAAAAAAAAAigAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACKigAAAgCgCKAAAAAAAAAAAAAAAAAHIICpVABFAAAEUAAAAAAAAAAAAAAAABBQKi1ACCglCgCooAigAAAAAAAAAAAAAAigAAAACVQBFAAAAAAAAAAAAAAAAAAAAAAABFAAAAAAAAAAAAAAAAAAAAAAAAARQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADcgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACoAB0ACgIKgAAAoCBQAFBAABUBYgAAAAAAoIL4ABQAAEFQAUARQBFARRABQBFAQUARQE+KKB6G4BS5SgIQAD8SKAkUBQAAAQqACgCosARUAAigqKoIAKP//Z',
             'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYxO4gWuUz07BRakSf3JxYY28sMp1Fm7fxMgJOVDF6Mn9WPGynwEva_wCvmi5f5JNQcWSxI6mp&s'
-            'https://upload.wikimedia.org/wikipedia/commons/1/10/Charlie_Kirk_%2853952923573%29_%28headshot_cropped%29.jpg'
         ];
 
         let activeAnims = [];
@@ -211,7 +210,7 @@
             if (Math.random() < SURGE_CHANCE) {
                 surgeActive = true;
                 document.body.classList.add('surge');
-                power = Math.min(100, power + 3);
+                power = Math.min(100, power + 30);
                 updatePower();
                 setTimeout(() => {
                     surgeActive = false;
