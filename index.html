@@ -120,7 +120,7 @@
         const SPAWN_MAX = 45000;
         const ACTIVATE_MIN = 10000;
         const ACTIVATE_MAX = 30000;
-        const MOVE_SPEED = 1500;
+        const MOVE_SPEED = 2500;
         const GLITCH_CHANCE = 0.25;
         const SURGE_CHANCE = 0.08;
 
@@ -249,7 +249,7 @@
             obj.isActive = true;
             obj.img.classList.add('active');
             obj.img.style.left = '-15%';
-            setTimeout((10) => {
+            setTimeout(() => {
                 if (obj.img.parentNode && obj.isActive && !doorsClosed) obj.img.style.left = '115%';
             }, 300);
             obj.moveEndTimer = setTimeout(() => {
